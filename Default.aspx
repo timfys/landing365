@@ -5,9 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Claim Your 10 FREE Coins &#8211; PlayerClub365</title>
-  <meta name="title" content="Claim Your 10 FREE Coins &#8211; PlayerClub365">
-  <meta name="description" content="You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary."/>
+  <asp:Literal ID="title" runat="server"></asp:Literal>
+  <asp:Literal ID="metaTitle" runat="server"></asp:Literal>
+  <asp:Literal ID="desc" runat="server"></asp:Literal>
   <meta name="keywords" content="social casino, free coins, online slots, casino games, risk-free gaming, playerclub365, welcome bonus, no deposit bonus">
   <meta name="author" content="PlayerClub365">
   <meta name="robots" content="index, follow">
@@ -17,8 +17,8 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://playerclub365.com/">
-  <meta property="og:title" content="Claim Your 10 FREE Coins – PlayerClub365">
-  <meta property="og:description" content="You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.">
+  <asp:Literal ID="ogTitle" runat="server"></asp:Literal>
+  <asp:Literal ID="ogDesc" runat="server"></asp:Literal>
   <meta property="og:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+10+FREE+COINS">
   <meta property="og:site_name" content="PlayerClub365">
 
@@ -209,7 +209,7 @@
         <!-- ===== ASP.NET FORM ===== -->
         <form id="claimForm" runat="server" class="mb-6 max-w-2xl mx-auto">
 
-          <div class="relative mb-6 flex flex-row gap-2 md:gap-3 h-14 md:h-20 w-full">
+       <div id="phoneInputContainer" runat="server" class="relative mb-6 flex flex-row gap-2 md:gap-3 h-14 md:h-20 w-full">
 
             <!-- Country ISO Dropdown -->
             <div class="relative w-[20%] md:w-30 shrink-0 h-full">
@@ -230,10 +230,19 @@
               <asp:TextBox ID="txtPhone" runat="server"
                 TextMode="SingleLine"
                 placeholder="Phone Number"
-                CssClass="w-full h-full px-4 md:px-6 text-lg md:text-2xl border-2 border-gray-200 rounded-xl bg-white text-black font-bold tracking-wide focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/20 transition-all placeholder:text-gray-400 shadow-inner"
-                autocomplete="tel" />
+                CssClass="w-full h-full px-4 md:px-6 text-lg md:text-2xl border-2 border-gray-200 rounded-xl bg-white text-black font-bold tracking-wide focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/20 transition-all placeholder:text-gray-400 shadow-inner "
+                autocomplete="tel" 
+                 MaxLength="15"
+                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                           />
             </div>
 
+          </div>
+          <!-- Read-only контейнер для отображения после успеха (скрыт по умолчанию) -->
+          <div id="readonlyPhoneContainer" runat="server" visible="false" class="relative mb-6 h-14 md:h-20 w-full">
+              <div class="w-full h-full px-4 md:px-6 bg-gray-100 border-2 border-gray-300 rounded-xl flex items-center text-black font-bold text-lg md:text-2xl shadow-inner cursor-not-allowed opacity-75">
+                  <asp:Label ID="lblReadonlyPhone" runat="server" Text="" />
+              </div>
           </div>
 
           <!-- Submit Button -->
@@ -264,42 +273,15 @@
         <div class="w-20 h-1 bg-brand-gold mx-auto rounded-full"></div>
       </div> 
 <!-- ===== GAME SLIDER ===== -->
-    <div class="w-full py-2 relative overflow-hidden mb-10">
-      <div class="absolute top-0 left-0 w-12 md:w-32 h-full bg-gradient-to-r from-brand-bg/80 to-transparent z-10 pointer-events-none"></div>
-      <div class="absolute top-0 right-0 w-12 md:w-32 h-full bg-gradient-to-l from-brand-bg/80 to-transparent z-10 pointer-events-none"></div>
-      <div class="flex animate-scroll w-max gap-4 px-4">
-        <%-- Duplicate for infinite loop effect --%>
-        <% string[] games = { 
-             "Sweet Bonanza|FF69B4|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwZnJ1aXRzdy92czIwZnJ1aXRzd19uYXJyb3cuanBn",
-             "Big Bass Vegas|1E90FF|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czEwdHhiaWdiYXNzL3ZzMTB0eGJpZ2Jhc3NfbmFycm93LmpwZw==",
-             "Blackjack Live|1a1a1a|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmxhY2tqYWNrQ2xhc3NpYy5qcGc=",
-             "Roleta|009c3b|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2V2b2x1dGlvbl9sb2JieS9nYW1lX2ltZ181LzYwMDM3LmpwZw==",
-             "Aviatrix|8A2BE2|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL3NyZW50L2dhbWVfaW1nXzUvU3ByaWJlQXZpYXRvci5qcGc=",
-             "Baccarat Mini|DC143C|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmFjY2FyYXRUcmlwbGVUcmVhLmpwZw==",
-             "Jelly Candy|FFD700|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czVqZWxseWMvdnM1amVsbHljX25hcnJvdy5qcGc=",
-             "Fat Panda|708090|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwYmVlZmVkL3ZzMjBiZWVmZWRfbmFycm93LmpwZw==",
-             "Sweet Bonanza|FF69B4|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwZnJ1aXRzdy92czIwZnJ1aXRzd19uYXJyb3cuanBn",
-             "Big Bass Vegas|1E90FF|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czEwdHhiaWdiYXNzL3ZzMTB0eGJpZ2Jhc3NfbmFycm93LmpwZw==",
-             "Blackjack Live|1a1a1a|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmxhY2tqYWNrQ2xhc3NpYy5qcGc=",
-             "Roleta|009c3b|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2V2b2x1dGlvbl9sb2JieS9nYW1lX2ltZ181LzYwMDM3LmpwZw==",
-             "Aviatrix|8A2BE2|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL3NyZW50L2dhbWVfaW1nXzUvU3ByaWJlQXZpYXRvci5qcGc=",
-             "Baccarat Mini|DC143C|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmFjY2FyYXRUcmlwbGVUcmVhLmpwZw==",
-             "Jelly Candy|FFD700|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czVqZWxseWMvdnM1amVsbHljX25hcnJvdy5qcGc=",
-             "Fat Panda|708090|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwYmVlZmVkL3ZzMjBiZWVmZWRfbmFycm93LmpwZw=="
-           };
-           foreach (var g in games) {
-             var parts = g.Split('|');
-             var name = parts[0]; var color = parts[1]; var src = parts[2]; %>
-        <div class="w-24 md:w-28 aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg border border-white/10 hover:border-brand-gold transition-all duration-300 transform hover:scale-105 flex-shrink-0">
-          <img src="https://www.playerclub365.com/images/poster.ashx?src=<%= src %>" class="w-full h-full object-cover">
-          <div class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/90 to-transparent">
-            <p class="text-white text-[9px] md:text-[10px] font-bold text-center drop-shadow-md truncate"><%= name %></p>
-          </div>
-        </div>
-        <% } %>
-      </div>
+<div class="w-full py-2 relative overflow-hidden mb-10">
+  <div class="absolute top-0 left-0 w-12 md:w-32 h-full bg-gradient-to-r from-brand-bg/80 to-transparent z-10 pointer-events-none"></div>
+  <div class="absolute top-0 right-0 w-12 md:w-32 h-full bg-gradient-to-l from-brand-bg/80 to-transparent z-10 pointer-events-none"></div>
+  
+  <div id="gameSlider" class="overflow-hidden relative">
+    <div id="sliderTrack" class="flex w-max gap-4 px-4" style="transition: none;">      <!-- Games will be dynamically inserted here -->
     </div>
-
+  </div>
+</div>
     <!-- ===== BENEFITS ===== -->
     <section class="px-4 mb-16 relative z-10">
       <div class="text-center mb-10">
@@ -417,7 +399,230 @@
     </footer>
 
   </div><!-- end app wrapper -->
+<script>
+  // Game data array
+  const gamesData = [
+    { name: "Sweet Bonanza", cid:"12", color: "FF69B4", src: "aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwZnJ1aXRzdy92czIwZnJ1aXRzd19uYXJyb3cuanBn" },
+    { name: "Big Bass Vegas", cid:"12", color: "1E90FF", src: "aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czEwdHhiaWdiYXNzL3ZzMTB0eGJpZ2Jhc3NfbmFycm93LmpwZw==" },
+    { name: "Blackjack Live", cid:"33", color: "1a1a1a", src: "aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmxhY2tqYWNrQ2xhc3NpYy5qcGc=" },
+    { name: "Aviatrix", cid:"12", color: "8A2BE2", src: "aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL3NyZW50L2dhbWVfaW1nXzUvU3ByaWJlQXZpYXRvci5qcGc=" },
+    { name: "Blackjack VIP 27", cid:"33", color: "DC143C", src: "aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2V2b2x1dGlvbl9sb2JieS9nYW1lX2ltZ181LzE1NTExLmpwZw==" },
+    { name: "Jelly Candy", cid:"12", color: "FFD700", src: "aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czVqZWxseWMvdnM1amVsbHljX25hcnJvdy5qcGc=" },
+    { name: "Fat Panda", cid:"12", color: "708090", src: "aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwYmVlZmVkL3ZzMjBiZWVmZWRfbmFycm93LmpwZw==" }
+  ];
 
+  // Get category ID from URL parameter
+  function getCategoryIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('cid');
+  }
+
+  // Filter games by category ID
+  function filterGamesByCategory(games, categoryId) {
+    if (!categoryId) return games; // No category filter, return all games
+    
+    const filteredGames = games.filter(game => game.cid === categoryId);
+    
+    // If filtered games array is empty, return all games
+    if (filteredGames.length === 0) {
+      console.log('No games found for category ' + categoryId + ', showing all games');
+      return games;
+    }
+    
+    console.log('Showing ' + filteredGames.length + ' games for category ' + categoryId);
+    return filteredGames;
+  }
+
+  // Create game card DOM element
+  function createGameCard(game) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'w-24 md:w-28 aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg border border-white/10 hover:border-brand-gold transition-all duration-300 transform hover:scale-105 flex-shrink-0';
+    
+    const img = document.createElement('img');
+    img.src = `https://www.playerclub365.com/images/poster.ashx?src=${game.src}`;
+    img.className = 'w-full h-full object-cover';
+    img.alt = game.name;
+    
+    const overlayDiv = document.createElement('div');
+    overlayDiv.className = 'absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/90 to-transparent';
+    
+    const nameP = document.createElement('p');
+    nameP.className = 'text-white text-[9px] md:text-[10px] font-bold text-center drop-shadow-md truncate';
+    nameP.textContent = game.name;
+    
+    overlayDiv.appendChild(nameP);
+    cardDiv.appendChild(img);
+    cardDiv.appendChild(overlayDiv);
+    
+    return cardDiv;
+  }
+
+  // Initialize infinite slider with filtered games
+  function initInfiniteSlider() {
+    const sliderTrack = document.getElementById('sliderTrack');
+    if (!sliderTrack) {
+      console.error('Slider track not found');
+      return;
+    }
+    
+    // Get category ID from URL and filter games
+    const categoryId = getCategoryIdFromUrl();
+    const filteredGames = filterGamesByCategory(gamesData, categoryId);
+    
+    // Clear existing content
+    while (sliderTrack.firstChild) {
+      sliderTrack.removeChild(sliderTrack.firstChild);
+    }
+    
+    // Create 3 copies of the filtered games array for seamless infinite scroll
+    // More copies for smoother scrolling if there are few games
+    const copyCount = filteredGames.length < 5 ? 12 : 6;
+    
+    for (let i = 0; i < copyCount; i++) {
+      filteredGames.forEach(game => {
+        const gameCard = createGameCard(game);
+        sliderTrack.appendChild(gameCard);
+      });
+    }
+    
+    let currentPosition = 0;
+    let animationId = null;
+    let isAnimating = true;
+    let lastTimestamp = 0;
+    let speed = 0.6; // Scroll speed
+    
+    // Calculate the width of one full set of games
+    function getOneSetWidth() {
+      const firstGame = sliderTrack.children[0];
+      if (!firstGame) return 0;
+      
+      const gameWidth = firstGame.offsetWidth + 16; // width + gap (gap-4 = 16px)
+      return filteredGames.length * gameWidth;
+    }
+    
+    // Move first set of games to the end
+    function moveFirstSetToEnd() {
+      const gamesPerSet = filteredGames.length;
+      const childrenToMove = [];
+      
+      // Collect first set of games
+      for (let i = 0; i < gamesPerSet; i++) {
+        if (sliderTrack.children[0]) {
+          childrenToMove.push(sliderTrack.children[0]);
+        }
+      }
+      
+      // Append them to the end
+      childrenToMove.forEach(child => {
+        sliderTrack.appendChild(child);
+      });
+    }
+    
+    // Scroll animation function with time-based movement
+    function scrollSlider(timestamp) {
+      if (!isAnimating) return;
+      
+      if (lastTimestamp === 0) {
+        lastTimestamp = timestamp;
+        animationId = requestAnimationFrame(scrollSlider);
+        return;
+      }
+      
+      const delta = Math.min(50, timestamp - lastTimestamp);
+      const moveDistance = speed * (delta / 16.67);
+      
+      currentPosition -= moveDistance;
+      lastTimestamp = timestamp;
+      
+      const oneSetWidth = getOneSetWidth();
+      
+      // Reset position when we've scrolled past one full set
+      if (Math.abs(currentPosition) >= oneSetWidth) {
+        currentPosition = 0;
+        
+        // Move first set to end seamlessly
+        moveFirstSetToEnd();
+        
+        // Reset transform
+        sliderTrack.style.transform = `translateX(0px)`;
+        lastTimestamp = timestamp;
+        animationId = requestAnimationFrame(scrollSlider);
+        return;
+      }
+      
+      sliderTrack.style.transform = `translateX(${currentPosition}px)`;
+      animationId = requestAnimationFrame(scrollSlider);
+    }
+    
+    // Start animation
+    function startAnimation() {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      isAnimating = true;
+      lastTimestamp = 0;
+      animationId = requestAnimationFrame(scrollSlider);
+    }
+    
+    // Stop animation
+    function stopAnimation() {
+      isAnimating = false;
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+    }
+    
+    // Start the animation immediately
+    startAnimation();
+    
+    // Pause animation on hover
+    const sliderContainer = document.getElementById('gameSlider');
+    if (sliderContainer) {
+      sliderContainer.addEventListener('mouseenter', () => {
+        stopAnimation();
+      });
+      
+      sliderContainer.addEventListener('mouseleave', () => {
+        startAnimation();
+      });
+    }
+    
+    // Handle visibility change to save resources
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
+    });
+    
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const wasAnimating = isAnimating;
+        stopAnimation();
+        
+        currentPosition = 0;
+        sliderTrack.style.transform = `translateX(0px)`;
+        
+        // Restart animation if it was animating
+        if (wasAnimating) {
+          startAnimation();
+        }
+      }, 250);
+    });
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInfiniteSlider);
+  } else {
+    initInfiniteSlider();
+  }
+</script>
   <script>
     // Confetti on load
     // ── Load countries from JSON ──────────────────────────────

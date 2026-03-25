@@ -40,9 +40,19 @@ public partial class Default : Page
     // -------------------------------------------------------
     protected void Page_Load(object sender, EventArgs e)
     {
-        string categoryId = Request.QueryString["categoryId"];
+        string categoryId = Request.QueryString["cid"];
         string callGameCategoriesGetResponse = "";
         string categoryName = "";
+        string ogDescription = "";
+        var titleContent = "Claim Your 10 FREE Coins &#8211; PlayerClub365";
+        metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
+        title.Text = "<title>" + titleContent + "</title>";
+        desc.Text =
+            "<meta name=\"description\" content=\"You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
+        ogDesc.Text =
+            "<meta property=\"og:description\" content=\"You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
+        ogTitle.Text =
+            "<meta property=\"og:title\" content=\"Claim Your 10 FREE Coins – PlayerClub365\">\n";
         string iso = GetUserIsoFromCloudFlare(HttpContext.Current);
         Page.ClientScript.RegisterStartupScript(
             this.GetType(),
@@ -67,6 +77,27 @@ public partial class Default : Page
                         var h = document.getElementById('categoryName');
                         if(h) h.innerText='"+categoryName+ "';};",
                     true);
+                if (!string.IsNullOrEmpty(categoryName))
+                {
+                    titleContent = categoryName + " &#8211; Claim Your 10 FREE Coins &#8211; PlayerClub365";
+                    metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
+                    title.Text = "<title>" + titleContent + "</title>";
+                    ogTitle.Text =
+                        "<meta property=\"og:title\" content=\"" + titleContent + "\">\n";
+                }
+            }
+            Regex regex2 = new Regex(@"""og_description""\s*:\s*""([^""]+)""");
+            Match match2 = regex2.Match(callGameCategoriesGetResponse);
+            if (match2.Success)
+            {
+                ogDescription = match2.Groups[1].Value;
+                if (!string.IsNullOrEmpty(ogDescription))
+                {
+                    desc.Text = "<meta name=\"description\" content=\"" + ogDescription +
+                                  " &#8211; You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
+                    ogDesc.Text =
+                        "  <meta property=\"og:description\" content=\"" + ogDescription + " &#8211; You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
+                }
             }
             else
             {
@@ -221,10 +252,31 @@ public partial class Default : Page
                         entityBonusesUpdateResult = match.Groups[1].Value;
                         if (entityBonusesUpdateResult.Contains("OK"))
                         {
+                            // Скрываем контейнер с активным вводом
+                            phoneInputContainer.Visible = false;
+    
+                            // Показываем read-only контейнер
+                            readonlyPhoneContainer.Visible = true;
+                            btnClaim.Visible = false;
+
+                            // Устанавливаем текст с номером телефона (с кодом страны, если нужно)
+                            string countryCode = callingCode; 
+                            string phoneNumber = txtPhone.Text;
+                            lblReadonlyPhone.Text = "+"+countryCode+" "+phoneNumber;
+    
                             ShowSuccess("Bonuses given successfully");
                         }
                         else if (entityBonusesUpdateResult.Contains("insert into customtable199"))
                         {
+                            // Аналогично для уже выданных бонусов
+                            phoneInputContainer.Visible = false;
+                            readonlyPhoneContainer.Visible = true;
+                            btnClaim.Visible = false;
+
+                            string countryCode = callingCode;
+                            string phoneNumber = txtPhone.Text;
+                            lblReadonlyPhone.Text = "+"+countryCode+phoneNumber;
+    
                             ShowSuccess("Bonuses already given for this user");
                         }
                         else
@@ -414,6 +466,7 @@ public partial class Default : Page
             <Lang_Code xsi:type=""xsd:string"">en</Lang_Code>
             <Fields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
             <item xsi:type=""xsd:string"">category_name</item>
+            <item xsi:type=""xsd:string"">gcs.og_description</item>
             </Fields><FilterFields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
             <item xsi:type=""xsd:string"">gc.categoryId</item>
             </FilterFields><FilterValues enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
