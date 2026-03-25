@@ -26,6 +26,9 @@ public partial class Default : Page
     // Redirect destination when ResultCode == 0
     private const string SuccessUrl =
         "https://www.playerclub365.com/verify-phone";
+    private static string _cachedCountriesJson = null;
+    private static DateTime _cacheTimestamp = DateTime.MinValue;
+    private static readonly object _cacheLock = new object();
     public static string GetUserIsoFromCloudFlare(HttpContext context)
     {
         var host = context.Request.Url.Host;
@@ -46,7 +49,8 @@ protected void Page_Load(object sender, EventArgs e)
     string categoryName = "";
     string ogDescription = "";
     string gamesGetResponse = "";
-    
+    LoadCountriesToJavaScript();
+
     gamesGetResponse = CallGamesGet(categoryId);
     var gamesJson = FormatGamesJson(gamesGetResponse);
     string script = "var gamesFromServer = "+gamesJson+";";
@@ -130,7 +134,103 @@ protected void Page_Load(object sender, EventArgs e)
         }
     }
 }
+private void LoadCountriesToJavaScript()
+{
+    string jsonData = null;
+    string cacheFilePath = Server.MapPath("~/App_Data/countries_cache.json");
+    
+    // Проверяем файловый кэш
+    if (File.Exists(cacheFilePath))
+    {
+        FileInfo cacheFile = new FileInfo(cacheFilePath);
+        if (DateTime.Now - cacheFile.LastWriteTime < TimeSpan.FromHours(24))
+        {
+            jsonData = File.ReadAllText(cacheFilePath, Encoding.UTF8);
+        }
+    }
+    
+    // Если кэша нет или он устарел - загружаем
+    if (jsonData == null)
+    {
+        try
+        {
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                client.Headers.Add("Cache-Control", "max-age=86400");
+                jsonData = client.DownloadString("https://www.playerclub365.com/countries.json");
+                
+                // Фильтруем пустые записи
+                var serializer = new JavaScriptSerializer();
+                var countries = serializer.Deserialize<List<Dictionary<string, object>>>(jsonData);
+                var filteredCountries = new List<Dictionary<string, object>>();
+                
+                foreach (var c in countries)
+                {
+                    if (c.ContainsKey("ISO3166") && c["ISO3166"].ToString() != "empty" &&
+                        c.ContainsKey("CallingCode") && !string.IsNullOrEmpty(c["CallingCode"].ToString()))
+                    {
+                        filteredCountries.Add(c);
+                    }
+                }
+                
+                jsonData = serializer.Serialize(filteredCountries);
+                
+                // Сохраняем в файловый кэш
+                Directory.CreateDirectory(Server.MapPath("~/App_Data"));
+                File.WriteAllText(cacheFilePath, jsonData, Encoding.UTF8);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Trace.TraceError("Error loading countries: " + ex.Message);
+            
+            // Пробуем использовать просроченный кэш
+            if (File.Exists(cacheFilePath))
+            {
+                jsonData = File.ReadAllText(cacheFilePath, Encoding.UTF8);
+            }
+            
+            if (jsonData == null)
+            {
+                // Fallback
+                string fallbackScript = GetFallbackScript();
+                ClientScript.RegisterStartupScript(this.GetType(), "PreloadCountriesFallback", fallbackScript, true);
+                return;
+            }
+        }
+    }
+    
+    // Встраиваем данные в страницу
+    string escapedJson = HttpUtility.JavaScriptStringEncode(jsonData);
+    string script = "window.preloadedCountriesData = JSON.parse('" + escapedJson + "');";
+    ClientScript.RegisterStartupScript(this.GetType(), "PreloadCountries", script, true);
+}
 
+private string GetFallbackScript()
+{
+    return @"
+    window.preloadedCountriesData = [
+        { ISO3166: 'US', CallingCode: '1', CountryName: 'United States' },
+        { ISO3166: 'GB', CallingCode: '44', CountryName: 'United Kingdom' },
+        { ISO3166: 'CA', CallingCode: '1', CountryName: 'Canada' },
+        { ISO3166: 'AU', CallingCode: '61', CountryName: 'Australia' },
+        { ISO3166: 'DE', CallingCode: '49', CountryName: 'Germany' },
+        { ISO3166: 'FR', CallingCode: '33', CountryName: 'France' },
+        { ISO3166: 'ES', CallingCode: '34', CountryName: 'Spain' },
+        { ISO3166: 'IT', CallingCode: '39', CountryName: 'Italy' },
+        { ISO3166: 'NL', CallingCode: '31', CountryName: 'Netherlands' },
+        { ISO3166: 'BE', CallingCode: '32', CountryName: 'Belgium' },
+        { ISO3166: 'SE', CallingCode: '46', CountryName: 'Sweden' },
+        { ISO3166: 'NO', CallingCode: '47', CountryName: 'Norway' },
+        { ISO3166: 'DK', CallingCode: '45', CountryName: 'Denmark' },
+        { ISO3166: 'FI', CallingCode: '358', CountryName: 'Finland' },
+        { ISO3166: 'PL', CallingCode: '48', CountryName: 'Poland' },
+        { ISO3166: 'RU', CallingCode: '7', CountryName: 'Russia' },
+        { ISO3166: 'BR', CallingCode: '55', CountryName: 'Brazil' },
+        { ISO3166: 'MX', CallingCode: '52', CountryName: 'Mexico' }
+    ];";
+}
 // Вспомогательный метод для извлечения JSON из SOAP ответа
 private string ExtractJsonFromSoapResponse(string soapResponse)
 {

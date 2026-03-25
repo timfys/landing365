@@ -621,31 +621,37 @@
     function loadCountries() {
       var sel = document.getElementById('<%= ddlCountry.ClientID %>');
       var hiddenCode = document.getElementById('<%= callingCode.ClientID %>');
-    
-      fetch('https://www.playerclub365.com/countries.json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          sel.innerHTML = '';
-          data.forEach(function(c) {
-            if (!c.ISO3166 || c.ISO3166 === 'empty' || !c.CountryName) return;
-            var opt = document.createElement('option');
-            opt.value = c.ISO3166;
-            opt.setAttribute("data-code", c.CallingCode);
-            opt.text  = '+' + c.CallingCode;
-            sel.appendChild(opt);
-          });
-    
-          var iso = window.__cfIso || 'EN';
-          if (sel.querySelector('option[value="' + iso + '"]')) {
-            sel.value = iso;
-            var selected = sel.options[sel.selectedIndex];
+      
+      if (!sel) return;
+      
+      // Используем предзагруженные данные (уже в памяти)
+      if (window.preloadedCountriesData && window.preloadedCountriesData.length > 0) {
+        sel.innerHTML = '';
+        window.preloadedCountriesData.forEach(function(c) {
+          if (!c.ISO3166 || c.ISO3166 === 'empty' || !c.CountryName) return;
+          var opt = document.createElement('option');
+          opt.value = c.ISO3166;
+          opt.setAttribute("data-code", c.CallingCode);
+          opt.text = '+' + c.CallingCode;
+          sel.appendChild(opt);
+        });
+        
+        // Устанавливаем страну по умолчанию
+        var iso = window.__cfIso || 'US';
+        if (sel.querySelector('option[value="' + iso + '"]')) {
+          sel.value = iso;
+          var selected = sel.options[sel.selectedIndex];
+          if (hiddenCode) {
             hiddenCode.value = selected.getAttribute('data-code') || '';
           }
-        })
-        .catch(function() {
-          sel.innerHTML = '<option value="">-- Select country --</option>';
-        });
+        }
+      } else {
+        // Fallback: загружаем через fetch если предзагрузка не сработала
+        console.log('Preloaded data not available, fetching...');
+        fetchCountriesFromExternal(sel, hiddenCode);
+      }
     }
+
     document.addEventListener('DOMContentLoaded', function () {
     
       var sel = document.getElementById('<%= ddlCountry.ClientID %>');
