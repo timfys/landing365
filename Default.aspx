@@ -401,16 +401,8 @@
   </div><!-- end app wrapper -->
 <script>
   // Game data array
-  const gamesData = [
-    { name: "Sweet Bonanza", cid:"12", color: "FF69B4", src: "aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwZnJ1aXRzdy92czIwZnJ1aXRzd19uYXJyb3cuanBn" },
-    { name: "Big Bass Vegas", cid:"12", color: "1E90FF", src: "aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czEwdHhiaWdiYXNzL3ZzMTB0eGJpZ2Jhc3NfbmFycm93LmpwZw==" },
-    { name: "Blackjack Live", cid:"33", color: "1a1a1a", src: "aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmxhY2tqYWNrQ2xhc3NpYy5qcGc=" },
-    { name: "Aviatrix", cid:"12", color: "8A2BE2", src: "aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL3NyZW50L2dhbWVfaW1nXzUvU3ByaWJlQXZpYXRvci5qcGc=" },
-    { name: "Blackjack VIP 27", cid:"33", color: "DC143C", src: "aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2V2b2x1dGlvbl9sb2JieS9nYW1lX2ltZ181LzE1NTExLmpwZw==" },
-    { name: "Jelly Candy", cid:"12", color: "FFD700", src: "aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czVqZWxseWMvdnM1amVsbHljX25hcnJvdy5qcGc=" },
-    { name: "Fat Panda", cid:"12", color: "708090", src: "aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwYmVlZmVkL3ZzMjBiZWVmZWRfbmFycm93LmpwZw==" }
-  ];
-
+  //const gamesData =[];
+  const gamesData = typeof gamesFromServer !== 'undefined' ? gamesFromServer : [];
   // Get category ID from URL parameter
   function getCategoryIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
