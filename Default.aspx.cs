@@ -25,13 +25,31 @@ public partial class Default : Page
     // Redirect destination when ResultCode == 0
     private const string SuccessUrl =
         "https://www.playerclub365.com/verify-phone";
+    public static string GetUserIsoFromCloudFlare(HttpContext context)
+    {
+        var host = context.Request.Url.Host;
 
+        if (!string.IsNullOrEmpty(host) &&
+            host.IndexOf("player", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return context.Request.Headers["CF-IPCountry"];
+        }
+
+        return "IL";
+    }
     // -------------------------------------------------------
     protected void Page_Load(object sender, EventArgs e)
     {
         string categoryId = Request.QueryString["categoryId"];
         string callGameCategoriesGetResponse = "";
         string categoryName = "";
+        string iso = GetUserIsoFromCloudFlare(HttpContext.Current);
+        Page.ClientScript.RegisterStartupScript(
+            this.GetType(),
+            "cfIso",
+            "window.__cfIso = '" + iso + "';",
+            true
+        );
         if (!string.IsNullOrEmpty(categoryId))
         {
             callGameCategoriesGetResponse = CallGameCategoriesGet(categoryId);

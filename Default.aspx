@@ -162,7 +162,7 @@
 <div class="particles"></div>  
   <div id="loadingOverlay">
     <div class="spinner mb-5"></div>
-    <p class="text-brand-gold font-bold text-lg tracking-wide">Verifying your number…</p>
+    <p class="text-brand-gold font-bold text-lg tracking-wide">Verifying your number...</p>
   </div>
 
 <div class="min-h-screen flex flex-col font-sans overflow-x-hidden relative bg-brand-bg">
@@ -212,7 +212,7 @@
           <div class="relative mb-6 flex flex-row gap-2 md:gap-3 h-14 md:h-20 w-full">
 
             <!-- Country ISO Dropdown -->
-            <div class="relative w-[30%] md:w-44 shrink-0 h-full">
+            <div class="relative w-[20%] md:w-30 shrink-0 h-full">
               <input type="hidden" id="callingCode" name="callingCode" runat="server" value="" />
               <select id="ddlCountry" name="ddlCountry" runat="server"
                 class="w-full h-full pl-2 pr-6 md:pl-4 md:pr-10 bg-white border-2 border-gray-200 rounded-xl text-black font-bold focus:outline-none focus:border-brand-gold appearance-none cursor-pointer text-base md:text-xl shadow-inner text-center md:text-left">
@@ -269,13 +269,29 @@
       <div class="absolute top-0 right-0 w-12 md:w-32 h-full bg-gradient-to-l from-brand-bg/80 to-transparent z-10 pointer-events-none"></div>
       <div class="flex animate-scroll w-max gap-4 px-4">
         <%-- Duplicate for infinite loop effect --%>
-        <% string[] games = { "Sweet Bonanza|FF69B4", "Big Bass Vegas|1E90FF", "Blackjack Live|1a1a1a", "Roleta|009c3b", "Aviatrix|8A2BE2", "Baccarat Mini|DC143C", "Jelly Candy|FFD700", "Fat Panda|708090",
-                               "Sweet Bonanza|FF69B4", "Big Bass Vegas|1E90FF", "Blackjack Live|1a1a1a", "Roleta|009c3b", "Aviatrix|8A2BE2", "Baccarat Mini|DC143C", "Jelly Candy|FFD700", "Fat Panda|708090" };
+        <% string[] games = { 
+             "Sweet Bonanza|FF69B4|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwZnJ1aXRzdy92czIwZnJ1aXRzd19uYXJyb3cuanBn",
+             "Big Bass Vegas|1E90FF|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czEwdHhiaWdiYXNzL3ZzMTB0eGJpZ2Jhc3NfbmFycm93LmpwZw==",
+             "Blackjack Live|1a1a1a|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmxhY2tqYWNrQ2xhc3NpYy5qcGc=",
+             "Roleta|009c3b|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2V2b2x1dGlvbl9sb2JieS9nYW1lX2ltZ181LzYwMDM3LmpwZw==",
+             "Aviatrix|8A2BE2|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL3NyZW50L2dhbWVfaW1nXzUvU3ByaWJlQXZpYXRvci5qcGc=",
+             "Baccarat Mini|DC143C|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmFjY2FyYXRUcmlwbGVUcmVhLmpwZw==",
+             "Jelly Candy|FFD700|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czVqZWxseWMvdnM1amVsbHljX25hcnJvdy5qcGc=",
+             "Fat Panda|708090|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwYmVlZmVkL3ZzMjBiZWVmZWRfbmFycm93LmpwZw==",
+             "Sweet Bonanza|FF69B4|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwZnJ1aXRzdy92czIwZnJ1aXRzd19uYXJyb3cuanBn",
+             "Big Bass Vegas|1E90FF|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czEwdHhiaWdiYXNzL3ZzMTB0eGJpZ2Jhc3NfbmFycm93LmpwZw==",
+             "Blackjack Live|1a1a1a|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmxhY2tqYWNrQ2xhc3NpYy5qcGc=",
+             "Roleta|009c3b|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2V2b2x1dGlvbl9sb2JieS9nYW1lX2ltZ181LzYwMDM3LmpwZw==",
+             "Aviatrix|8A2BE2|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL3NyZW50L2dhbWVfaW1nXzUvU3ByaWJlQXZpYXRvci5qcGc=",
+             "Baccarat Mini|DC143C|aHR0cHM6Ly9zdGF0aWMuY2RuZXUtc3RhdC5jb20vcmVzb3VyY2VzL3NpdGVwaWNzdGJzL29wX2dhbGF4c3lzL2dhbWVfaW1nXzUvQmFjY2FyYXRUcmlwbGVUcmVhLmpwZw==",
+             "Jelly Candy|FFD700|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czVqZWxseWMvdnM1amVsbHljX25hcnJvdy5qcGc=",
+             "Fat Panda|708090|aHR0cHM6Ly9jZG4uYWVzZ2FtaW5nYXNpYS5jb20vZ2FtZV9waWMvcHAvZW4vbWFpbi92czIwYmVlZmVkL3ZzMjBiZWVmZWRfbmFycm93LmpwZw=="
+           };
            foreach (var g in games) {
              var parts = g.Split('|');
-             var name = parts[0]; var color = parts[1]; %>
+             var name = parts[0]; var color = parts[1]; var src = parts[2]; %>
         <div class="w-24 md:w-28 aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg border border-white/10 hover:border-brand-gold transition-all duration-300 transform hover:scale-105 flex-shrink-0">
-          <img src="https://placehold.co/300x400/<%= color %>/FFFFFF?text=<%= Uri.EscapeDataString(name) %>" alt="<%= name %>" class="w-full h-full object-cover">
+          <img src="https://www.playerclub365.com/images/poster.ashx?src=<%= src %>" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/90 to-transparent">
             <p class="text-white text-[9px] md:text-[10px] font-bold text-center drop-shadow-md truncate"><%= name %></p>
           </div>
@@ -382,7 +398,7 @@
     <footer class="text-center py-12 px-4 border-t border-brand-border bg-brand-bg relative z-10">
       <div class="mb-8">
         <span class="inline-block text-xs md:text-sm font-semibold text-brand-text-muted uppercase tracking-widest border border-brand-border px-4 py-1.5 rounded-full bg-brand-panel/50">
-          Exclusive Offer • 21+ Only • Entertainment Only
+          Exclusive Offer | 21+ Only | Entertainment Only
         </span>
       </div>
       <div class="mb-6">
@@ -407,6 +423,8 @@
     // ── Load countries from JSON ──────────────────────────────
     function loadCountries() {
       var sel = document.getElementById('<%= ddlCountry.ClientID %>');
+      var hiddenCode = document.getElementById('<%= callingCode.ClientID %>');
+    
       fetch('https://www.playerclub365.com/countries.json')
         .then(function(r) { return r.json(); })
         .then(function(data) {
@@ -416,12 +434,16 @@
             var opt = document.createElement('option');
             opt.value = c.ISO3166;
             opt.setAttribute("data-code", c.CallingCode);
-            opt.text  = c.CountryName + ' (+' + c.CallingCode + ')';
+            opt.text  = '+' + c.CallingCode;
             sel.appendChild(opt);
-            //callingCodeInput.text = c.CallingCode;
           });
-          // Default to US if present
-          if (sel.querySelector('option[value="US"]')) sel.value = 'US';
+    
+          var iso = window.__cfIso || 'EN';
+          if (sel.querySelector('option[value="' + iso + '"]')) {
+            sel.value = iso;
+            var selected = sel.options[sel.selectedIndex];
+            hiddenCode.value = selected.getAttribute('data-code') || '';
+          }
         })
         .catch(function() {
           sel.innerHTML = '<option value="">-- Select country --</option>';
