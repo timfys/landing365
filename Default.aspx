@@ -212,18 +212,15 @@
        <div id="phoneInputContainer" runat="server" class="relative mb-6 flex flex-row gap-2 md:gap-3 h-14 md:h-20 w-full">
 
             <!-- Country ISO Dropdown -->
-            <div class="relative w-[20%] md:w-30 shrink-0 h-full">
-              <input type="hidden" id="callingCode" name="callingCode" runat="server" value="" />
-              <select id="ddlCountry" name="ddlCountry" runat="server"
-                class="w-full h-full pl-2 pr-6 md:pl-4 md:pr-10 bg-white border-2 border-gray-200 rounded-xl text-black font-bold focus:outline-none focus:border-brand-gold appearance-none cursor-pointer text-base md:text-xl shadow-inner text-center md:text-left">
-                <option value="">Loading...</option>
-              </select>
-              <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </div>
-            </div>
+<asp:DropDownList
+    ID="ddlCountry"
+    runat="server"
+    CssClass="w-[20%] md:w-30 shrink-0 h-full pl-2 pr-6 md:pl-4 md:pr-10 bg-white border-2 border-gray-200 rounded-xl text-black font-bold focus:outline-none focus:border-brand-gold appearance-none cursor-pointer text-base md:text-xl shadow-inner text-center md:text-left"
+    AutoPostBack="false">
+    <asp:ListItem Text="Loading..." Value="" />
+</asp:DropDownList>
+
+<asp:HiddenField ID="callingCode" runat="server" Value="" />
 
             <!-- Phone Number Input -->
             <div class="flex-1 relative h-full min-w-0">
@@ -404,26 +401,6 @@
   //const gamesData =[];
   const gamesData = typeof gamesFromServer !== 'undefined' ? gamesFromServer : [];
   // Get category ID from URL parameter
-  function getCategoryIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('cid');
-  }
-
-  // Filter games by category ID
-  function filterGamesByCategory(games, categoryId) {
-    if (!categoryId) return games; // No category filter, return all games
-    
-    const filteredGames = games.filter(game => game.cid === categoryId);
-    
-    // If filtered games array is empty, return all games
-    if (filteredGames.length === 0) {
-      console.log('No games found for category ' + categoryId + ', showing all games');
-      return games;
-    }
-    
-    console.log('Showing ' + filteredGames.length + ' games for category ' + categoryId);
-    return filteredGames;
-  }
 
   // Create game card DOM element
   function createGameCard(game) {
@@ -458,8 +435,7 @@
     }
     
     // Get category ID from URL and filter games
-    const categoryId = getCategoryIdFromUrl();
-    const filteredGames = filterGamesByCategory(gamesData, categoryId);
+    const filteredGames = gamesData;
     
     // Clear existing content
     while (sliderTrack.firstChild) {
@@ -618,39 +594,6 @@
   <script>
     // Confetti on load
     // ── Load countries from JSON ──────────────────────────────
-    function loadCountries() {
-      var sel = document.getElementById('<%= ddlCountry.ClientID %>');
-      var hiddenCode = document.getElementById('<%= callingCode.ClientID %>');
-      
-      if (!sel) return;
-      
-      // Используем предзагруженные данные (уже в памяти)
-      if (window.preloadedCountriesData && window.preloadedCountriesData.length > 0) {
-        sel.innerHTML = '';
-        window.preloadedCountriesData.forEach(function(c) {
-          if (!c.ISO3166 || c.ISO3166 === 'empty' || !c.CountryName) return;
-          var opt = document.createElement('option');
-          opt.value = c.ISO3166;
-          opt.setAttribute("data-code", c.CallingCode);
-          opt.text = '+' + c.CallingCode;
-          sel.appendChild(opt);
-        });
-        
-        // Устанавливаем страну по умолчанию
-        var iso = window.__cfIso || 'US';
-        if (sel.querySelector('option[value="' + iso + '"]')) {
-          sel.value = iso;
-          var selected = sel.options[sel.selectedIndex];
-          if (hiddenCode) {
-            hiddenCode.value = selected.getAttribute('data-code') || '';
-          }
-        }
-      } else {
-        // Fallback: загружаем через fetch если предзагрузка не сработала
-        console.log('Preloaded data not available, fetching...');
-        fetchCountriesFromExternal(sel, hiddenCode);
-      }
-    }
 
     document.addEventListener('DOMContentLoaded', function () {
     
@@ -665,7 +608,7 @@
     });
 
     window.addEventListener('load', function () {
-      loadCountries();
+      
 
       // Confetti
       setTimeout(function () {
