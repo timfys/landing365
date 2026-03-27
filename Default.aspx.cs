@@ -454,6 +454,16 @@ private string FormatGamesJson(string gamesGetResponse)
                             lblReadonlyPhone.Text = "+"+countryCode+" "+phoneNumber;
     
                             ShowSuccess("Bonuses given successfully");
+                            // Редирект через 5 секунд
+                            string redirectScript = @"
+                                setTimeout(function() {
+                                    window.location.href = 'https://www.playerclub365.com/account';
+                                }, 3000);
+                            ";
+
+                            // Вставляем скрипт на страницу
+                            Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
+
                         }
                         else if (entityBonusesUpdateResult.Contains("insert into customtable199"))
                         {
@@ -467,6 +477,15 @@ private string FormatGamesJson(string gamesGetResponse)
                             lblReadonlyPhone.Text = "+"+countryCode+phoneNumber;
     
                             ShowSuccess("Bonuses already given for this user");
+                            // Редирект через 5 секунд
+                            string redirectScript = @"
+                                setTimeout(function() {
+                                    window.location.href = 'https://www.playerclub365.com/account';
+                                }, 5000);
+                            ";
+
+                            // Вставляем скрипт на страницу
+                            Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
                         }
                         else
                         {
