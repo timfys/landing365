@@ -542,6 +542,7 @@ private string FormatGamesJson(string gamesGetResponse)
     // -------------------------------------------------------
     private string CallSigninWithPhone(string countryIso, string phoneNumber)
     {
+        string affiliateId = Request.QueryString["aid"];
         string soapEnvelope = string.Format(
 @"<?xml version=""1.0"" encoding=""utf-8""?>
 <soap:Envelope
@@ -555,13 +556,13 @@ private string FormatGamesJson(string gamesGetResponse)
       <CountryISO xsi:type=""xsd:string"">{0}</CountryISO>
       <PhoneNumber xsi:type=""xsd:string"">{1}</PhoneNumber>
       <VerificationCode xsi:type=""xsd:string""></VerificationCode>
-      <affiliate_entityID xsi:type=""xsd:int"">0</affiliate_entityID>
+      <affiliate_entityID xsi:type=""xsd:int"">{2}</affiliate_entityID>
     </ns1:Signin_With_Phone>
   </soap:Body>
 </soap:Envelope>",
 
             countryIso,
-            phoneNumber);
+            phoneNumber, (affiliateId != null && affiliateId != "" ? affiliateId : "0"));
 
         using (var client = new WebClient())
         {
