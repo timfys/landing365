@@ -215,11 +215,36 @@
 <asp:DropDownList
     ID="ddlCountry"
     runat="server"
-    CssClass="w-[20%] md:w-30 shrink-0 h-full pl-2 pr-6 md:pl-4 md:pr-10 bg-white border-2 border-gray-200 rounded-xl text-black font-bold focus:outline-none focus:border-brand-gold appearance-none cursor-pointer text-base md:text-xl shadow-inner text-center md:text-left"
+CssClass="hidden"
     AutoPostBack="false">
     <asp:ListItem Text="Loading..." Value="" />
 </asp:DropDownList>
+<div class="relative w-[20%] md:w-30 shrink-0 h-full" id="customCountryWrapper">
+  
+  <!-- Selected -->
+  <div id="customSelect"
+       class="w-full h-full flex items-center justify-center gap-1 md:gap-2 px-2 md:px-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer text-black font-bold text-sm md:text-xl shadow-inner">
 
+    <img id="selectedFlag" src="flags/se.png" class="w-5 h-5 object-cover rounded-sm">
+    <span id="selectedCode">+46</span>
+  </div>
+
+  <!-- Dropdown -->
+<div id="customDropdown"
+     class="absolute hidden top-full left-0 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50">
+  <!-- SEARCH -->
+  <div class="p-2 border-b">
+    <input id="countrySearch"
+           type="text"
+           placeholder="Search country or code"
+           class="w-full px-3 py-2 border rounded-lg text-black text-sm outline-none">
+  </div>
+
+  <!-- LIST -->
+  <div id="countryList" class="max-h-60 overflow-y-auto"></div>
+
+</div>
+  </div>
 <asp:HiddenField ID="callingCode" runat="server" Value="" />
 
             <!-- Phone Number Input -->
@@ -599,7 +624,22 @@
     
       var sel = document.getElementById('<%= ddlCountry.ClientID %>');
       var hiddenCode = document.getElementById('<%= callingCode.ClientID %>');
-    
+    // Добавляем флаги к элементам списка
+    for (var i = 0; i < sel.options.length; i++) {
+        var option = sel.options[i];
+        var countryIso = option.value;
+        if (countryIso) {
+            var img = document.createElement('img');
+            img.src = 'flags/' + option.value + '.png';
+            img.alt = option.value;
+            img.style.width = '20px';
+            img.style.marginRight = '8px';
+            img.style.verticalAlign = 'middle';
+
+            // Используем innerHTML вместо text
+            option.innerHTML = img.outerHTML + option.text;
+        }
+    }
       sel.addEventListener('change', function () {
         var selected = this.options[this.selectedIndex];
         hiddenCode.value = selected.getAttribute('data-code') || '';
@@ -671,6 +711,128 @@
       }
     }
   </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sel = document.getElementById('<%= ddlCountry.ClientID %>');
+    const hiddenCode = document.getElementById('<%= callingCode.ClientID %>');
+    const customSelect = document.getElementById('customSelect');
+    const selectedFlag = document.getElementById('selectedFlag');
+    const selectedCode = document.getElementById('selectedCode');
+    const customDropdown = document.getElementById('customDropdown');
+    const countryList = document.getElementById('countryList');
+    const countrySearch = document.getElementById('countrySearch');
+
+    // --- 1. Построение кастомного списка ---
+    function buildCountryList() {
+        countryList.innerHTML = '';
+        for (let i = 0; i < sel.options.length; i++) {
+            const option = sel.options[i];
+            const countryIso = option.value;
+            const countryName = option.text;
+            const code = option.getAttribute('data-code') || '';
+
+            if (!countryIso) continue;
+
+            const item = document.createElement('div');
+            item.className = 'flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-200';
+            item.setAttribute('data-iso', countryIso);
+            item.setAttribute('data-code', code);
+
+            const img = document.createElement('img');
+            img.src = 'flags/' + countryIso.toLowerCase() + '.png';
+            img.alt = countryIso;
+            img.className = 'w-5 h-5 rounded-sm';
+
+            const span = document.createElement('span');
+            span.textContent = `+${code}`;
+            span.className = 'text-black text-sm';
+
+            item.appendChild(img);
+            item.appendChild(span);
+
+            item.addEventListener('click', function () {
+                selectCountry(countryIso, code);
+                toggleDropdown(false);
+            });
+
+            countryList.appendChild(item);
+        }
+    }
+
+    // --- 2. Выбор страны ---
+    function selectCountry(iso, code) {
+        // Обновляем скрытое поле
+        hiddenCode.value = code;
+
+        // Обновляем кастомный селект
+        selectedFlag.src = 'flags/' + iso.toLowerCase() + '.png';
+        selectedCode.textContent = '+' + code;
+
+        // Синхронизируем DropDownList
+        for (let i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].value.toUpperCase() === iso.toUpperCase()) {
+                sel.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    // --- 3. Показ/скрытие Dropdown ---
+    function toggleDropdown(show) {
+        customDropdown.classList.toggle('hidden', !show);
+    }
+
+    customSelect.addEventListener('click', function () {
+        toggleDropdown(customDropdown.classList.contains('hidden'));
+        countrySearch.value = '';
+        filterCountries('');
+        countrySearch.focus();
+    });
+
+    // --- 4. Фильтр по поиску ---
+    function filterCountries(query) {
+        const items = countryList.children;
+        query = query.toLowerCase();
+        for (let i = 0; i < items.length; i++) {
+            const name = items[i].textContent.toLowerCase();
+            items[i].style.display = name.includes(query) ? 'flex' : 'none';
+        }
+    }
+
+    countrySearch.addEventListener('input', function () {
+        filterCountries(this.value);
+    });
+
+    // --- 5. Закрытие при клике вне ---
+    document.addEventListener('click', function (e) {
+        if (!customSelect.contains(e.target) && !customDropdown.contains(e.target)) {
+            toggleDropdown(false);
+        }
+    });
+
+    // --- 6. Инициализация списка ---
+    buildCountryList();
+
+    // --- 7. Автоматический выбор страны по Cloudflare ---
+    if (window.__cfIso) {
+        let found = false;
+        for (let i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].value.toUpperCase() === window.__cfIso.toUpperCase()) {
+                const code = sel.options[i].getAttribute('data-code') || '';
+                selectCountry(sel.options[i].value, code);
+                found = true;
+                break;
+            }
+        }
+        // Если не нашли ISO, оставляем первый элемент
+        if (!found && sel.options.length > 0) {
+            const firstIso = sel.options[0].value;
+            const firstCode = sel.options[0].getAttribute('data-code') || '';
+            selectCountry(firstIso, firstCode);
+        }
+    }
+});
+</script>
 
 </body>
 </html>
