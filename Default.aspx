@@ -271,7 +271,7 @@ CssClass="hidden"
           <asp:Button ID="btnClaim" runat="server"
             Text="Collect and Play &#8594;"
             OnClick="btnClaim_Click"
-            OnClientClick="return showLoading();"
+            OnClientClick="return preparePhoneAndSubmit() && showLoading();"
             CssClass="w-full bg-brand-gold text-brand-bg py-3 md:py-4 px-4 md:px-6 text-lg md:text-2xl font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all transform hover:-translate-y-1 active:translate-y-1 flex items-center justify-center gap-2 relative overflow-hidden border-b-4 border-brand-gold-dark hover:border-b-[6px] shadow-xl whitespace-nowrap" />
           <asp:Button ID="btnPlay" runat="server"
             Text="Play &#8594;"
@@ -431,6 +431,26 @@ CssClass="hidden"
 
   </div><!-- end app wrapper -->
 <script>
+  function preparePhoneAndSubmit() {
+    // Получаем значение из ASP.NET текстовых полей
+    var phoneInput = document.getElementById('<%= txtPhone.ClientID %>');
+    var callingCodeInput = document.getElementById('callingCode');
+    if (!phoneInput || !callingCodeInput) {
+      return true; // Если элементы не найдены, просто отправляем форму
+    }
+
+    // Очищаем номер: удаляем все не-цифры и ведущие нули
+    var phone = phoneInput.value.replace(/\D/g, '').replace(/^0+/, '');
+    var callingCode = callingCodeInput.value.trim();
+
+    // Устанавливаем в localStorage в формате +<код_страны><номер>
+    if (phone && callingCode) {
+      localStorage.setItem('Mobile', '+' + callingCode + phone);
+    }
+
+    // Возвращаем true, чтобы форма была отправлена
+    return true;
+  }
   // Game data array
   //const gamesData =[];
   const gamesData = typeof gamesFromServer !== 'undefined' ? gamesFromServer : [];
