@@ -4,6 +4,7 @@ using System.Text;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Xml;
+using System.Security;
 using System.Security.Cryptography;
 using System.IO;
 using System.Web;
@@ -12,6 +13,11 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
+using System.Linq;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Modes;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Engines;
 public partial class Default : Page
 {
     // -------------------------------------------------------
@@ -42,68 +48,93 @@ public partial class Default : Page
         return "IL";
     }
     // -------------------------------------------------------
-protected void Page_Load(object sender, EventArgs e)
-{
-    string categoryId = Request.QueryString["cid"];
-    string callGameCategoriesGetResponse = "";
-    string categoryName = "";
-    string ogDescription = "";
-    string gamesGetResponse = "";
-    LoadCountriesToJavaScript();
-
-    gamesGetResponse = CallGamesGet(categoryId);
-    var gamesJson = FormatGamesJson(gamesGetResponse);
-    string script = "var gamesFromServer = "+gamesJson+";";
-    Page.ClientScript.RegisterStartupScript(this.GetType(), "gamesData", script, true);
-    
-    var titleContent = "Claim Your 10 FREE Coins &#8211; PlayerClub365";
-    metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
-    title.Text = "<title>" + titleContent + "</title>";
-    desc.Text =
-        "<meta name=\"description\" content=\"You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
-    ogDesc.Text =
-        "<meta property=\"og:description\" content=\"You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
-    ogTitle.Text =
-        "<meta property=\"og:title\" content=\"Claim Your 10 FREE Coins – PlayerClub365\">\n";
-    
-    string iso = GetUserIsoFromCloudFlare(HttpContext.Current);
-    Page.ClientScript.RegisterStartupScript(
-        this.GetType(),
-        "cfIso",
-        "window.__cfIso = '" + iso + "';",
-        true
-    );
-    
-    if (!string.IsNullOrEmpty(categoryId))
+    protected void Page_Load(object sender, EventArgs e)
     {
-        callGameCategoriesGetResponse = CallGameCategoriesGet(categoryId);
-        
-        // Правильно парсим JSON из SOAP ответа
-        string jsonData = ExtractJsonFromSoapResponse(callGameCategoriesGetResponse);
-        
-        if (!string.IsNullOrEmpty(jsonData))
+        Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        Response.Cache.SetNoStore();
+        Response.Cache.SetExpires(DateTime.UtcNow.AddSeconds(-1));
+        string categoryId = Request.QueryString["cid"];
+        string callGameCategoriesGetResponse = "";
+        string categoryName = "";
+        string ogDescription = "";
+        string gamesGetResponse = "";
+        btnPlay.Visible = false;
+        btnClaim2.Visible = false;
+        LoadCountriesToJavaScript();
+        string aid = Request.QueryString["aid"];
+        var affiliateScriptResponse = "";
+        var affiliateScript = "";
+        if (aid != null && aid != "")
         {
-            var serializer = new JavaScriptSerializer();
-            var categoriesList = serializer.Deserialize<List<Dictionary<string, object>>>(jsonData);
-            
-            if (categoriesList != null && categoriesList.Count > 0)
+            affiliateScriptResponse = CallEntityFindAffiliate(aid);
+            if (!string.IsNullOrWhiteSpace(affiliateScriptResponse))
             {
-                var category = categoriesList[0];
-                
-                if (category.ContainsKey("category_name"))
+                var match1 = Regex.Match(
+                    affiliateScriptResponse,
+                    @"""customfield165""\s*:\s*""((?:\\.|[^""])*)""",
+                    RegexOptions.Singleline);
+                if (match1.Success)
                 {
-                    categoryName = category["category_name"].ToString() ?? "";
+                    affiliateScript = match1.Groups[1].Value;
+                    affiliateScript = HttpUtility.HtmlDecode(affiliateScript);
+                    litAffiliateScript.Text = affiliateScript;
                 }
-                
-                if (category.ContainsKey("og_description"))
+            }
+        }
+
+        gamesGetResponse = CallGamesGet(categoryId);
+        var gamesJson = FormatGamesJson(gamesGetResponse);
+        string script = "var gamesFromServer = " + gamesJson + ";";
+        Page.ClientScript.RegisterStartupScript(this.GetType(), "gamesData", script, true);
+
+        var titleContent = "Claim Your 10 FREE Coins &#8211; PlayerClub365";
+        metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
+        title.Text = "<title>" + titleContent + "</title>";
+        desc.Text =
+            "<meta name=\"description\" content=\"You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
+        ogDesc.Text =
+            "<meta property=\"og:description\" content=\"You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
+        ogTitle.Text =
+            "<meta property=\"og:title\" content=\"Claim Your 10 FREE Coins – PlayerClub365\">\n";
+
+        string iso = GetUserIsoFromCloudFlare(HttpContext.Current);
+        Page.ClientScript.RegisterStartupScript(
+            this.GetType(),
+            "cfIso",
+            "window.__cfIso = '" + iso + "';",
+            true
+        );
+
+        if (!string.IsNullOrEmpty(categoryId))
+        {
+            callGameCategoriesGetResponse = CallGameCategoriesGet(categoryId);
+
+            // Правильно парсим JSON из SOAP ответа
+            string jsonData = ExtractJsonFromSoapResponse(callGameCategoriesGetResponse);
+
+            if (!string.IsNullOrEmpty(jsonData))
+            {
+                var serializer = new JavaScriptSerializer();
+                var categoriesList = serializer.Deserialize<List<Dictionary<string, object>>>(jsonData);
+
+                if (categoriesList != null && categoriesList.Count > 0)
                 {
-                    ogDescription = category["og_description"].ToString() ?? "";
-                }
-                
-                if (!string.IsNullOrEmpty(categoryName))
-                {
-                    // Используем ClientScript вместо ScriptManager для надежности
-                    string showDivScript = @"
+                    var category = categoriesList[0];
+
+                    if (category.ContainsKey("category_name"))
+                    {
+                        categoryName = category["category_name"].ToString() ?? "";
+                    }
+
+                    if (category.ContainsKey("og_description"))
+                    {
+                        ogDescription = category["og_description"].ToString() ?? "";
+                    }
+
+                    if (!string.IsNullOrEmpty(categoryName))
+                    {
+                        // Используем ClientScript вместо ScriptManager для надежности
+                        string showDivScript = @"
                         setTimeout(function() {
                             var div = document.getElementById('categoryNameDiv');
                             if(div) {
@@ -115,23 +146,133 @@ protected void Page_Load(object sender, EventArgs e)
                             }
                         }, 100);
                     ";
-                    Page.ClientScript.RegisterStartupScript(this.GetType(), "showCategoryDiv", showDivScript, true);
-                    
-                    titleContent = categoryName + " &#8211; Claim Your 10 FREE Coins &#8211; PlayerClub365";
-                    metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
-                    title.Text = "<title>" + titleContent + "</title>";
-                    ogTitle.Text = "<meta property=\"og:title\" content=\"" + titleContent + "\">\n";
-                }
-                
-                if (!string.IsNullOrEmpty(ogDescription))
-                {
-                    desc.Text = "<meta name=\"description\" content=\"" + ogDescription +
-                                  " &#8211; You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
-                    ogDesc.Text = "<meta property=\"og:description\" content=\"" + ogDescription + 
-                                  " &#8211; You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
+                        Page.ClientScript.RegisterStartupScript(this.GetType(), "showCategoryDiv", showDivScript, true);
+
+                        titleContent = categoryName + " &#8211; Claim Your 10 FREE Coins &#8211; PlayerClub365";
+                        metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
+                        title.Text = "<title>" + titleContent + "</title>";
+                        ogTitle.Text = "<meta property=\"og:title\" content=\"" + titleContent + "\">\n";
+                    }
+
+                    if (!string.IsNullOrEmpty(ogDescription))
+                    {
+                        desc.Text = "<meta name=\"description\" content=\"" + ogDescription +
+                                    " &#8211; You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
+                        ogDesc.Text = "<meta property=\"og:description\" content=\"" + ogDescription +
+                                      " &#8211; You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
+                    }
                 }
             }
         }
+
+        var cookie = Request.Cookies["cred"];
+        var entityBonusesCheckResponse = "";
+        var entityBonusesCheckResult = "";
+        if (cookie != null)
+        {
+            try
+            {
+                string base64Token = HttpUtility.UrlDecode(cookie.Value);
+                var credential = DecryptCredential(base64Token);
+                var currentEntityId = credential.EntityId.ToString();
+                //ShowSuccess(currentEntityId);
+                if (currentEntityId != "" && currentEntityId != " ")
+                {
+                    entityBonusesCheckResponse = CheckIfBonusExists(currentEntityId);
+                }
+
+                if (!string.IsNullOrWhiteSpace(entityBonusesCheckResponse))
+                {
+                    var match = entityBonusesCheckResponse.Contains("customfield203");
+
+                    if (!match)
+                    {
+                        phoneInputContainer.Visible = false;
+                        readonlyPhoneContainer.Visible = false;
+                        txtPhone.Visible = false;
+                        btnClaim.Visible = false;
+                        btnPlay.Visible = false;
+                        btnClaim2.Visible = true;
+                    }
+                    else
+                    {
+                        phoneInputContainer.Visible = false;
+                        readonlyPhoneContainer.Visible = false;
+                        btnClaim.Visible = false;
+                        btnPlay.Visible = true;
+                        btnClaim2.Visible = false;
+                        ShowSuccess("Bonuses already given for this user");
+                    }
+                }
+                else
+                {
+                    ShowError("Error while giving bonuses. Try again later");
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowSuccess(" Ошибка расшифровки: " + ex.Message);
+            }
+        }
+    }
+
+    private Credential DecryptCredential(string token)
+{
+    if (string.IsNullOrEmpty(token))
+        return null;
+
+    try
+    {
+        byte[] blob = Convert.FromBase64String(token);
+
+        if (blob.Length < 28)
+            throw new CryptographicException("incorrect length");
+
+        byte[] iv = blob.Take(12).ToArray();
+        byte[] tag = blob.Skip(12).Take(16).ToArray();
+        byte[] cipher = blob.Skip(28).ToArray();
+
+        byte[] key = Convert.FromBase64String("pkCURTfUHR2wg1QporIC4MPGxqubPsWb+nREtkTsNus=");
+
+        byte[] input = new byte[cipher.Length + tag.Length];
+        Array.Copy(cipher, 0, input, 0, cipher.Length);
+        Array.Copy(tag, 0, input, cipher.Length, tag.Length);
+
+        var gcm = new GcmBlockCipher(new AesEngine());
+        gcm.Init(false, new AeadParameters(new KeyParameter(key), 128, iv));
+
+        byte[] plain = new byte[gcm.GetOutputSize(input.Length)];
+        int len = gcm.ProcessBytes(input, 0, input.Length, plain, 0);
+        gcm.DoFinal(plain, len);
+
+        string json = Encoding.UTF8.GetString(plain).TrimEnd('\0');
+
+        // **ИСПРАВЛЯЕМ JSON** (удаляем лишнюю кавычку)
+        json = Regex.Replace(json, @"""EntityId"":(\d+)""", m => "\"EntityId\":"+m.Groups[1].Value);
+        // **ДЕСЕРИАЛИЗУЕМ В СЛОВАРЬ**
+        var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        var dict = serializer.Deserialize<Dictionary<string, object>>(json);
+
+        // **УДАЛЯЕМ СЛУЖЕБНЫЕ ПОЛЯ**
+        dict.Remove("keyVersion");
+        dict.Remove("schemaVersion");
+
+        // **ИЗВЛЕКАЕМ EntityId**
+        int entityId = Convert.ToInt32(dict["EntityId"]);
+
+        // **ВОЗВРАЩАЕМ ОБЪЕКТ Credential**
+        return new Credential
+        {
+            EntityId = entityId,
+            Username = dict["Username"].ToString(),
+            Password = dict["Password"].ToString(),
+            Lid = dict.ContainsKey("Lid") ? dict["Lid"].ToString() : "0",
+            AffiliateId = dict.ContainsKey("AffiliateId") ? Convert.ToInt32(dict["AffiliateId"]) : 0
+        };
+    }
+    catch (Exception ex)
+    {
+        throw new CryptographicException("Ошибка: " + ex.Message);
     }
 }
 private void LoadCountriesToJavaScript()
@@ -457,8 +598,8 @@ private string FormatGamesJson(string gamesGetResponse)
                             // Редирект через 5 секунд
                             string redirectScript = @"
                                 setTimeout(function() {
-                                    window.location.href = 'https://www.playerclub365.com/account';
-                                }, 3000);
+                                    window.location.href = 'https://www.playerclub365.com/sign-in?page=1&user="+encoded+@"';
+                                }, 1000);
                             ";
 
                             // Вставляем скрипт на страницу
@@ -480,8 +621,8 @@ private string FormatGamesJson(string gamesGetResponse)
                             // Редирект через 5 секунд
                             string redirectScript = @"
                                 setTimeout(function() {
-                                    window.location.href = 'https://www.playerclub365.com/account';
-                                }, 5000);
+                                    window.location.href = 'https://www.playerclub365.com/sign-in?page=1&user="+encoded+@"';
+                                }, 500);
                             ";
 
                             // Вставляем скрипт на страницу
@@ -536,6 +677,64 @@ private string FormatGamesJson(string gamesGetResponse)
             default:
                 ShowError("!!!An unexpected error occurred (code: " + resultCode + "). Please try again.");
                 break;
+        }
+    }
+
+    protected void btnClaim2_Click(object sender, EventArgs e)
+    {
+        var cookie = Request.Cookies["cred"];
+        var entityBonusesCheckResponse = "";
+        var entityBonusesCheckResult = "";
+        var entityId = "";
+
+        if (cookie != null)
+        {
+            try
+            {
+                string base64Token = HttpUtility.UrlDecode(cookie.Value);
+                var credential = DecryptCredential(base64Token);
+                entityId = credential.EntityId.ToString();
+                if (entityId != "" && entityId != " ") entityBonusesCheckResponse = CallEntityBonusesUpdate(entityId);
+                if (!string.IsNullOrWhiteSpace(entityBonusesCheckResponse))
+                {
+                    var match = Regex.Match(entityBonusesCheckResponse, @"""ResultMessage""\s*:\s*""([^""]*)""");
+
+                    if (match.Success)
+                    {
+                        entityBonusesCheckResult = match.Groups[1].Value;
+                        if (entityBonusesCheckResult.Contains("OK"))
+                        {
+                            phoneInputContainer.Visible = false;
+                            readonlyPhoneContainer.Visible = false;
+                            btnClaim.Visible = false;
+                            
+                            ShowSuccess("Bonuses given successfully");
+                            // Редирект через 5 секунд
+                            string redirectScript = @"
+                                setTimeout(function() {
+                                    window.location.href = 'https://www.playerclub365.com/';
+                                }, 2000);
+                            ";
+
+                            // Вставляем скрипт на страницу
+                            Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess",
+                                redirectScript, true);
+                        }
+                        else
+                        {
+                            ShowError("Error while giving bonuses. Try again later");
+                        }
+                    }
+                }
+                else
+                {
+                    ShowError("Error while giving bonuses. Try again later");
+                }
+            }
+            catch
+            {
+
+            }
         }
     }
 
@@ -651,6 +850,91 @@ private string FormatGamesJson(string gamesGetResponse)
 
             phoneNumber,
             countryIso);
+
+        using (var client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+            client.Headers.Add("Content-Type", "text/xml; charset=utf-8");
+            client.Headers.Add("SOAPAction", "\"" + "urn:BusinessApiIntf-IBusinessAPI#Entity_Find" + "\"");
+
+            byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
+            byte[] responseBytes = client.UploadData("http://5.79.126.74:33322/soap/IBusinessAPI", "POST", requestBytes);
+            return Encoding.UTF8.GetString(responseBytes);
+        }
+    }
+    
+    private string CallEntityFindAffiliate(string aid)
+    {
+        string soapEnvelope = string.Format(
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            <env:Envelope xmlns:env=""http://www.w3.org/2003/05/soap-envelope""
+             xmlns:ns1=""urn:BusinessApiIntf-IBusinessAPI""
+             xmlns:xsd=""http://www.w3.org/2001/XMLSchema""
+             xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+             xmlns:enc=""http://www.w3.org/2003/05/soap-encoding""
+             xmlns:ns2=""urn:CommonWSTypes"">
+            <env:Body>
+            <ns1:Entity_Find env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
+            <ol_EntityId xsi:type=""xsd:int"">27827</ol_EntityId>
+            <ol_UserName xsi:type=""xsd:string"">442033973506</ol_UserName>
+            <ol_Password xsi:type=""xsd:string"">smart221134</ol_Password>
+            <BusinessId xsi:type=""xsd:int"">1</BusinessId>
+            <Limit_entities_per_business xsi:type=""xsd:boolean"">false</Limit_entities_per_business>
+            <Fields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
+            <item xsi:type=""xsd:string"">customfield165</item></Fields>
+            <FilterFields enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
+            <item xsi:type=""xsd:string"">entityId</item>
+            </FilterFields><FilterValues enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
+            <item xsi:type=""xsd:string"">{0}</item></FilterValues>
+            <LimitFrom xsi:type=""xsd:int"">0</LimitFrom>
+            <LimitCount xsi:type=""xsd:int"">0</LimitCount>
+            </ns1:Entity_Find></env:Body></env:Envelope>",
+
+            aid
+            );
+
+        using (var client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+            client.Headers.Add("Content-Type", "text/xml; charset=utf-8");
+            client.Headers.Add("SOAPAction", "\"" + "urn:BusinessApiIntf-IBusinessAPI#Entity_Find" + "\"");
+
+            byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
+            byte[] responseBytes = client.UploadData("http://5.79.126.74:33322/soap/IBusinessAPI", "POST", requestBytes);
+            return Encoding.UTF8.GetString(responseBytes);
+        }
+    }
+    
+    private string CheckIfBonusExists(string entityId)
+    {
+        string soapEnvelope = string.Format(
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<env:Envelope xmlns:env=""http://www.w3.org/2003/05/soap-envelope""
+ xmlns:ns1=""urn:BusinessApiIntf-IBusinessAPI""
+ xmlns:xsd=""http://www.w3.org/2001/XMLSchema""
+ xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+ xmlns:enc=""http://www.w3.org/2003/05/soap-encoding""
+ xmlns:ns2=""urn:CommonWSTypes"">
+<env:Body><ns1:CustomFields_Tables_Get env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
+<ol_EntityID xsi:type=""xsd:int"">27827</ol_EntityID>
+<ol_Username xsi:type=""xsd:string"">442033973506</ol_Username>
+<ol_Password xsi:type=""xsd:string"">smart221134</ol_Password>
+<TableID xsi:type=""xsd:int"">199</TableID>
+<ParentRecordID xsi:type=""xsd:int"">{0}</ParentRecordID>
+<Fields enc:itemType=""xsd:string"" enc:arraySize=""3"" xsi:type=""ns2:ArrayOfString"">
+<item xsi:type=""xsd:string"">customfield201</item>
+<item xsi:type=""xsd:string"">customfield202</item>
+<item xsi:type=""xsd:string"">customfield203</item>
+</Fields><FilterFields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
+<item xsi:type=""xsd:string"">customfield203</item></FilterFields>
+<FilterValues enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
+<item xsi:type=""xsd:string"">is not null</item></FilterValues>
+<LimitFrom xsi:type=""xsd:int"">0</LimitFrom>
+<LimitCount xsi:type=""xsd:int"">0</LimitCount>
+</ns1:CustomFields_Tables_Get></env:Body></env:Envelope>",
+
+            entityId
+            );
 
         using (var client = new WebClient())
         {
@@ -834,4 +1118,12 @@ private string FormatGamesJson(string gamesGetResponse)
             .Replace("\"", "&quot;")
             .Replace("'",  "&apos;");
     }
+}
+public class Credential
+{
+    public int EntityId { get; set; }
+    public string Username { get; set; }
+    public string Password { get; set; }
+    public string Lid { get; set; }
+    public int AffiliateId { get; set; }
 }
