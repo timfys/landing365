@@ -517,6 +517,7 @@ private string FormatGamesJson(string gamesGetResponse)
 
         // Strip any non-digit characters the user may have typed
         string digitsOnly = System.Text.RegularExpressions.Regex.Replace(phone, @"\D", "");
+    	digitsOnly = digitsOnly.TrimStart('0');
         if (digitsOnly.Length < 3)
         {
             ShowError("Phone number must be at least 3 digits.");
@@ -538,7 +539,7 @@ private string FormatGamesJson(string gamesGetResponse)
             ShowError("A network error occurred. Please try again.");
             return;
         }
-
+		ShowSuccess(rawResponse);
 
         var entityFindResponse = "";
         string entityId = "";
@@ -557,89 +558,9 @@ private string FormatGamesJson(string gamesGetResponse)
                 break;
             //юзер найден, делаем бонус
             case 2:
-                //Response.Redirect(SuccessUrl2, true);
-                entityFindResponse = CallEntityFind(countryIso, digitsOnly);
-                if (!string.IsNullOrWhiteSpace(entityFindResponse))
-                {
-                    var match = Regex.Match(entityFindResponse, @"""entityId""\s*:\s*(\d+)");
-    
-                    if (match.Success)
-                    {
-                        entityId = match.Groups[1].Value.Replace(" ","");
-                    }
-                }
-                else
-                {
-                    ShowError("Error while getting user info. Try again later");
-                }
-                if(entityId != "" && entityId != " ")entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
-                if (!string.IsNullOrWhiteSpace(entityBonusesUpdateResponse))
-                {
-                    var match = Regex.Match(entityBonusesUpdateResponse, @"""ResultMessage""\s*:\s*""([^""]*)""");
-    
-                    if (match.Success)
-                    {
-                        entityBonusesUpdateResult = match.Groups[1].Value;
-                        if (entityBonusesUpdateResult.Contains("OK"))
-                        {
-                            // Скрываем контейнер с активным вводом
-                            phoneInputContainer.Visible = false;
-    
-                            // Показываем read-only контейнер
-                            readonlyPhoneContainer.Visible = true;
-                            btnClaim.Visible = false;
-
-                            // Устанавливаем текст с номером телефона (с кодом страны, если нужно)
-                            string countryCode = callingCode; 
-                            string phoneNumber = txtPhone.Text;
-                            lblReadonlyPhone.Text = "+"+countryCode+" "+phoneNumber;
-    
-                            ShowSuccess("Bonuses given successfully");
-                            // Редирект через 5 секунд
-                            string redirectScript = @"
-                                setTimeout(function() {
-                                    localStorage.setItem('Mobile', "+callingCode+phone+@")
-                                    window.location.href = 'https://www.playerclub365.com/sign-in?page=1';
-                                }, 1000);
-                            ";
-
-                            // Вставляем скрипт на страницу
-                            Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
-
-                        }
-                        else if (entityBonusesUpdateResult.Contains("insert into customtable199"))
-                        {
-                            // Аналогично для уже выданных бонусов
-                            phoneInputContainer.Visible = false;
-                            readonlyPhoneContainer.Visible = true;
-                            btnClaim.Visible = false;
-
-                            string countryCode = callingCode;
-                            string phoneNumber = txtPhone.Text;
-                            lblReadonlyPhone.Text = "+"+countryCode+phoneNumber;
-    
-                            ShowSuccess("Bonuses already given for this user");
-                            // Редирект через 5 секунд
-                            string redirectScript = @"
-                                setTimeout(function() {
-                                    localStorage.setItem('Mobile', "+callingCode+phone+@")
-                                    window.location.href = 'https://www.playerclub365.com/sign-in?page=1';
-                                }, 500);
-                            ";
-
-                            // Вставляем скрипт на страницу
-                            Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
-                        }
-                        else
-                        {
-                            ShowError("Error while giving bonuses. Try again later");
-                        }
-                    }
-                }
-                else
-                {
-                    ShowError("Error while giving bonuses. Try again later");
-                }
+                string redirectScript = @"localStorage.setItem('Mobile', "+callingCode+digitsOnly.TrimStart('0')+@");";
+                Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
+                Response.Redirect("https://www.playerclub365.com/sign-in?page=1", true);
                 break;
 
             case 3:
@@ -711,16 +632,32 @@ private string FormatGamesJson(string gamesGetResponse)
                             btnClaim.Visible = false;
                             
                             ShowSuccess("Bonuses given successfully");
-                            // Редирект через 5 секунд
                             string redirectScript = @"
                                 setTimeout(function() {
                                     window.location.href = 'https://www.playerclub365.com/';
-                                }, 2000);
+                                }, 1000);
                             ";
 
                             // Вставляем скрипт на страницу
                             Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess",
                                 redirectScript, true);
+                        }
+                        else if (entityBonusesCheckResult.Contains("insert into customtable199"))
+                        {
+                            // Аналогично для уже выданных бонусов
+                            phoneInputContainer.Visible = false;
+                            readonlyPhoneContainer.Visible = true;
+                            btnClaim.Visible = false;
+    
+                            ShowSuccess("Bonuses already given for this user");
+                            string redirectScript = @"
+                                setTimeout(function() {
+                                    window.location.href = 'https://www.playerclub365.com/';
+                                }, 1000);
+                            ";
+
+                            // Вставляем скрипт на страницу
+                            Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
                         }
                         else
                         {

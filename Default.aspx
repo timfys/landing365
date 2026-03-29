@@ -225,13 +225,13 @@ CssClass="hidden"
   <div id="customSelect"
        class="w-full h-full flex items-center justify-center gap-1 md:gap-2 px-2 md:px-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer text-black font-bold text-sm md:text-xl shadow-inner">
 
-    <img id="selectedFlag" src="flags/se.png" class="w-5 h-5 object-cover rounded-sm">
+    <img id="selectedFlag" src="flags/se.png" class="hidden md:block w-5 h-5 object-cover rounded-sm">
     <span id="selectedCode">+46</span>
   </div>
 
   <!-- Dropdown -->
 <div id="customDropdown"
-     class="absolute hidden top-full left-0 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50">
+     class="absolute hidden top-full left-0 w-[500%] mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50">
   <!-- SEARCH -->
   <div class="p-2 border-b">
     <input id="countrySearch"
