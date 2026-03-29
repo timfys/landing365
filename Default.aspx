@@ -248,16 +248,19 @@ CssClass="hidden"
 <asp:HiddenField ID="callingCode" runat="server" Value="" />
 
             <!-- Phone Number Input -->
-            <div class="flex-1 relative h-full min-w-0">
-              <asp:TextBox ID="txtPhone" runat="server"
-                TextMode="SingleLine"
-                placeholder="Phone Number"
-                CssClass="w-full h-full px-4 md:px-6 text-lg md:text-2xl border-2 border-gray-200 rounded-xl bg-white text-black font-bold tracking-wide focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/20 transition-all placeholder:text-gray-400 shadow-inner "
-                autocomplete="tel" 
-                 MaxLength="15"
-                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                           />
-            </div>
+          <div class="flex-1 relative h-full min-w-0">
+            <asp:TextBox ID="txtPhone" runat="server"
+              TextMode="SingleLine"
+              placeholder="Phone Number"
+              CssClass="w-full h-full px-4 md:px-6 text-lg md:text-2xl border-2 border-gray-200 rounded-xl bg-white text-black font-bold tracking-wide focus:outline-none focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/20 transition-all placeholder:text-gray-400 shadow-inner"
+              autocomplete="tel"
+              MaxLength="15"
+              type="tel"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+            />
+          </div>
 
           </div>
           <!-- Read-only контейнер для отображения после успеха (скрыт по умолчанию) -->
