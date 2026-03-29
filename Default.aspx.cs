@@ -598,7 +598,8 @@ private string FormatGamesJson(string gamesGetResponse)
                             // Редирект через 5 секунд
                             string redirectScript = @"
                                 setTimeout(function() {
-                                    window.location.href = 'https://www.playerclub365.com/sign-in?page=1&user="+encoded+@"';
+                                    localStorage.setItem('Mobile', "+callingCode+phone+@")
+                                    window.location.href = 'https://www.playerclub365.com/sign-in?page=1';
                                 }, 1000);
                             ";
 
@@ -621,7 +622,8 @@ private string FormatGamesJson(string gamesGetResponse)
                             // Редирект через 5 секунд
                             string redirectScript = @"
                                 setTimeout(function() {
-                                    window.location.href = 'https://www.playerclub365.com/sign-in?page=1&user="+encoded+@"';
+                                    localStorage.setItem('Mobile', "+callingCode+phone+@")
+                                    window.location.href = 'https://www.playerclub365.com/sign-in?page=1';
                                 }, 500);
                             ";
 
