@@ -871,7 +871,7 @@ private string FormatGamesJson(string gamesGetResponse)
 </Fields><FilterFields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
 <item xsi:type=""xsd:string"">customfield203</item></FilterFields>
 <FilterValues enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
-<item xsi:type=""xsd:string"">is not null</item></FilterValues>
+<item xsi:type=""xsd:string"">&gt;0</item></FilterValues>
 <LimitFrom xsi:type=""xsd:int"">0</LimitFrom>
 <LimitCount xsi:type=""xsd:int"">0</LimitCount>
 </ns1:CustomFields_Tables_Get></env:Body></env:Envelope>",
