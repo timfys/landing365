@@ -18,20 +18,19 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Engines;
+using System.Configuration;
 public partial class Default : Page
 {
-    // -------------------------------------------------------
-    // SmartWinners SOAP endpoint (from the WSDL service node)
-    // -------------------------------------------------------
-    private const string SoapEndpoint =
-        "http://isapi.smart-winners.com/smartwinners.dll/soap/ISmartWinners";
-
+     string SmartWinnersApi = ConfigurationManager.AppSettings["SmartWinnersApi"];
+     string PlayerApi = ConfigurationManager.AppSettings["PlayerApi"];
+     string BusinessApi = ConfigurationManager.AppSettings["BusinessApi"];
+     string Pwd = ConfigurationManager.AppSettings["Pwd"];
+     string SuccessUrl = ConfigurationManager.AppSettings["SuccessUrl"];
+     string SignInUrl = ConfigurationManager.AppSettings["SignInUrl"];
+     string BaseUrl = ConfigurationManager.AppSettings["BaseUrl"];
+    
     private const string SoapAction =
         "urn:SmartWinners.Intf-ISmartWinners#Signin_With_Phone";
-
-    // Redirect destination when ResultCode == 0
-    private const string SuccessUrl =
-        "https://www.playerclub365.com/verify-phone";
     private static string _cachedCountriesJson = null;
     private static DateTime _cacheTimestamp = DateTime.MinValue;
     private static readonly object _cacheLock = new object();
@@ -50,6 +49,12 @@ public partial class Default : Page
     // -------------------------------------------------------
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (!IsPostBack)
+        {
+            DataBind();
+            string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
+            btnPlay.OnClientClick = "window.location = '"+baseUrl+"'; return false;";
+        }
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
         Response.Cache.SetNoStore();
         Response.Cache.SetExpires(DateTime.UtcNow.AddSeconds(-1));
@@ -560,7 +565,7 @@ private string FormatGamesJson(string gamesGetResponse)
             case 2:
                 string redirectScript = @"localStorage.setItem('Mobile', "+callingCode+digitsOnly.TrimStart('0')+@");";
                 Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
-                Response.Redirect("https://www.playerclub365.com/sign-in?page=1", true);
+                Response.Redirect(SignInUrl, true);
                 break;
 
             case 3:
@@ -634,7 +639,7 @@ private string FormatGamesJson(string gamesGetResponse)
                             ShowSuccess("Bonuses given successfully");
                             string redirectScript = @"
                                 setTimeout(function() {
-                                    window.location.href = 'https://www.playerclub365.com/';
+                                    window.location.href = '"+BaseUrl+@"';
                                 }, 1000);
                             ";
 
@@ -652,7 +657,7 @@ private string FormatGamesJson(string gamesGetResponse)
                             ShowSuccess("Bonuses already given for this user");
                             string redirectScript = @"
                                 setTimeout(function() {
-                                    window.location.href = 'https://www.playerclub365.com/';
+                                    window.location.href = '"+BaseUrl+@"';
                                 }, 1000);
                             ";
 
@@ -698,7 +703,6 @@ private string FormatGamesJson(string gamesGetResponse)
     </ns1:Signin_With_Phone>
   </soap:Body>
 </soap:Envelope>",
-
             countryIso,
             phoneNumber, (affiliateId != null && affiliateId != "" ? affiliateId : "0"));
 
@@ -709,7 +713,7 @@ private string FormatGamesJson(string gamesGetResponse)
             client.Headers.Add("SOAPAction", "\"" + SoapAction + "\"");
 
             byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
-            byte[] responseBytes = client.UploadData(SoapEndpoint, "POST", requestBytes);
+            byte[] responseBytes = client.UploadData(SmartWinnersApi, "POST", requestBytes);
             return Encoding.UTF8.GetString(responseBytes);
         }
     }
@@ -728,7 +732,7 @@ private string FormatGamesJson(string gamesGetResponse)
             <ns1:Games_Get env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
             <Ol_EntityId xsi:type=""xsd:int"">27827</Ol_EntityId>
             <Ol_Username xsi:type=""xsd:string"">442033973506</Ol_Username>
-            <Ol_Password xsi:type=""xsd:string"">smart221134</Ol_Password>
+            <Ol_Password xsi:type=""xsd:string"">{0}</Ol_Password>
             <Lang_Code xsi:type=""xsd:string"">en</Lang_Code>
             <Fields enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
             <item xsi:type=""xsd:string"">game_name</item>
@@ -738,11 +742,11 @@ private string FormatGamesJson(string gamesGetResponse)
             <FilterFields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
             <item xsi:type=""xsd:string"">categoryId</item></FilterFields>
             <FilterValues enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
-            <item xsi:type=""xsd:string"">{0}</item></FilterValues>
+            <item xsi:type=""xsd:string"">{1}</item></FilterValues>
             <LimitFrom xsi:type=""xsd:int"">0</LimitFrom>
             <LimitCount xsi:type=""xsd:int"">20</LimitCount>
             </ns1:Games_Get></env:Body></env:Envelope>",
-
+            Pwd,
             categoryId != "" && categoryId != null ? categoryId : ">0"
             );
 
@@ -753,7 +757,7 @@ private string FormatGamesJson(string gamesGetResponse)
             client.Headers.Add("SOAPAction", "\"" + "urn:Playerclub365.Intf-IPlayerclub365#Games_Get" + "\"");
 
             byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
-            byte[] responseBytes = client.UploadData("http://isapi-sw.profi.chat/casino365.dll/soap/IPlayerclub365", "POST", requestBytes);
+            byte[] responseBytes = client.UploadData(PlayerApi, "POST", requestBytes);
             return Encoding.UTF8.GetString(responseBytes);
         }
     }
@@ -772,7 +776,7 @@ private string FormatGamesJson(string gamesGetResponse)
             <ns1:Entity_Find env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
             <ol_EntityId xsi:type=""xsd:int"">27827</ol_EntityId>
             <ol_UserName xsi:type=""xsd:string"">442033973506</ol_UserName>
-            <ol_Password xsi:type=""xsd:string"">smart221134</ol_Password>
+            <ol_Password xsi:type=""xsd:string"">{0}</ol_Password>
             <BusinessId xsi:type=""xsd:int"">1</BusinessId>
             <Limit_entities_per_business xsi:type=""xsd:boolean"">false</Limit_entities_per_business>
             <Fields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
@@ -781,12 +785,12 @@ private string FormatGamesJson(string gamesGetResponse)
             <item xsi:type=""xsd:string"">mobile</item>
             <item xsi:type=""xsd:string"">country</item>
             </FilterFields><FilterValues enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
-            <item xsi:type=""xsd:string"">{0}</item>
-            <item xsi:type=""xsd:string"">{1}</item></FilterValues>
+            <item xsi:type=""xsd:string"">{1}</item>
+            <item xsi:type=""xsd:string"">{2}</item></FilterValues>
             <LimitFrom xsi:type=""xsd:int"">0</LimitFrom>
             <LimitCount xsi:type=""xsd:int"">0</LimitCount>
             </ns1:Entity_Find></env:Body></env:Envelope>",
-
+            Pwd,
             phoneNumber,
             countryIso);
 
@@ -797,7 +801,7 @@ private string FormatGamesJson(string gamesGetResponse)
             client.Headers.Add("SOAPAction", "\"" + "urn:BusinessApiIntf-IBusinessAPI#Entity_Find" + "\"");
 
             byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
-            byte[] responseBytes = client.UploadData("http://5.79.126.74:33322/soap/IBusinessAPI", "POST", requestBytes);
+            byte[] responseBytes = client.UploadData(BusinessApi, "POST", requestBytes);
             return Encoding.UTF8.GetString(responseBytes);
         }
     }
@@ -816,7 +820,7 @@ private string FormatGamesJson(string gamesGetResponse)
             <ns1:Entity_Find env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
             <ol_EntityId xsi:type=""xsd:int"">27827</ol_EntityId>
             <ol_UserName xsi:type=""xsd:string"">442033973506</ol_UserName>
-            <ol_Password xsi:type=""xsd:string"">smart221134</ol_Password>
+            <ol_Password xsi:type=""xsd:string"">{0}</ol_Password>
             <BusinessId xsi:type=""xsd:int"">1</BusinessId>
             <Limit_entities_per_business xsi:type=""xsd:boolean"">false</Limit_entities_per_business>
             <Fields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
@@ -824,11 +828,11 @@ private string FormatGamesJson(string gamesGetResponse)
             <FilterFields enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
             <item xsi:type=""xsd:string"">entityId</item>
             </FilterFields><FilterValues enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
-            <item xsi:type=""xsd:string"">{0}</item></FilterValues>
+            <item xsi:type=""xsd:string"">{1}</item></FilterValues>
             <LimitFrom xsi:type=""xsd:int"">0</LimitFrom>
             <LimitCount xsi:type=""xsd:int"">0</LimitCount>
             </ns1:Entity_Find></env:Body></env:Envelope>",
-
+            Pwd,
             aid
             );
 
@@ -839,7 +843,7 @@ private string FormatGamesJson(string gamesGetResponse)
             client.Headers.Add("SOAPAction", "\"" + "urn:BusinessApiIntf-IBusinessAPI#Entity_Find" + "\"");
 
             byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
-            byte[] responseBytes = client.UploadData("http://5.79.126.74:33322/soap/IBusinessAPI", "POST", requestBytes);
+            byte[] responseBytes = client.UploadData(BusinessApi, "POST", requestBytes);
             return Encoding.UTF8.GetString(responseBytes);
         }
     }
@@ -857,9 +861,9 @@ private string FormatGamesJson(string gamesGetResponse)
 <env:Body><ns1:CustomFields_Tables_Get env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
 <ol_EntityID xsi:type=""xsd:int"">27827</ol_EntityID>
 <ol_Username xsi:type=""xsd:string"">442033973506</ol_Username>
-<ol_Password xsi:type=""xsd:string"">smart221134</ol_Password>
+<ol_Password xsi:type=""xsd:string"">{0}</ol_Password>
 <TableID xsi:type=""xsd:int"">199</TableID>
-<ParentRecordID xsi:type=""xsd:int"">{0}</ParentRecordID>
+<ParentRecordID xsi:type=""xsd:int"">{1}</ParentRecordID>
 <Fields enc:itemType=""xsd:string"" enc:arraySize=""3"" xsi:type=""ns2:ArrayOfString"">
 <item xsi:type=""xsd:string"">customfield201</item>
 <item xsi:type=""xsd:string"">customfield202</item>
@@ -871,7 +875,7 @@ private string FormatGamesJson(string gamesGetResponse)
 <LimitFrom xsi:type=""xsd:int"">0</LimitFrom>
 <LimitCount xsi:type=""xsd:int"">0</LimitCount>
 </ns1:CustomFields_Tables_Get></env:Body></env:Envelope>",
-
+            Pwd,
             entityId
             );
 
@@ -882,7 +886,7 @@ private string FormatGamesJson(string gamesGetResponse)
             client.Headers.Add("SOAPAction", "\"" + "urn:BusinessApiIntf-IBusinessAPI#Entity_Find" + "\"");
 
             byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
-            byte[] responseBytes = client.UploadData("http://5.79.126.74:33322/soap/IBusinessAPI", "POST", requestBytes);
+            byte[] responseBytes = client.UploadData(BusinessApi, "POST", requestBytes);
             return Encoding.UTF8.GetString(responseBytes);
         }
     }
@@ -900,16 +904,16 @@ private string FormatGamesJson(string gamesGetResponse)
                 <env:Body><ns1:Entity_Bonuses_Update env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
                 <Ol_EntityId xsi:type=""xsd:int"">27827</Ol_EntityId>
                 <Ol_Username xsi:type=""xsd:string"">442033973506</Ol_Username>
-                <Ol_Password xsi:type=""xsd:string"">smart221134</Ol_Password>
+                <Ol_Password xsi:type=""xsd:string"">{0}</Ol_Password>
                 <recordId xsi:type=""xsd:int"">0</recordId>
-                <EntityId xsi:type=""xsd:int"">{0}</EntityId>
+                <EntityId xsi:type=""xsd:int"">{1}</EntityId>
                 <BonusType xsi:type=""xsd:int"">15</BonusType>
                 <Serial xsi:type=""xsd:int"">0</Serial>
                 <Value xsi:type=""xsd:double"">20</Value>
                 <NamesArray xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
                 <ValuesArray xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
                 </ns1:Entity_Bonuses_Update></env:Body></env:Envelope>",
-
+            Pwd,
             entityId
             );
 
@@ -920,7 +924,7 @@ private string FormatGamesJson(string gamesGetResponse)
             client.Headers.Add("SOAPAction", "\"" + "urn:Playerclub365.Intf-IPlayerclub365#Entity_Bonuses_Update" + "\"");
 
             byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
-            byte[] responseBytes = client.UploadData("http://isapi-sw.profi.chat/casino365.dll/soap/IPlayerclub365", "POST", requestBytes);
+            byte[] responseBytes = client.UploadData(PlayerApi, "POST", requestBytes);
             return Encoding.UTF8.GetString(responseBytes);
         }
     }
@@ -938,7 +942,7 @@ private string FormatGamesJson(string gamesGetResponse)
             <env:Body><ns1:Game_Categories_Get env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
             <Ol_EntityId xsi:type=""xsd:int"">27827</Ol_EntityId>
             <Ol_Username xsi:type=""xsd:string"">442033973506</Ol_Username>
-            <Ol_Password xsi:type=""xsd:string"">smart221134</Ol_Password>
+            <Ol_Password xsi:type=""xsd:string"">{0}</Ol_Password>
             <Lang_Code xsi:type=""xsd:string"">en</Lang_Code>
             <Fields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
             <item xsi:type=""xsd:string"">category_name</item>
@@ -946,11 +950,11 @@ private string FormatGamesJson(string gamesGetResponse)
             </Fields><FilterFields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
             <item xsi:type=""xsd:string"">gc.categoryId</item>
             </FilterFields><FilterValues enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
-            <item xsi:type=""xsd:string"">{0}</item></FilterValues>
+            <item xsi:type=""xsd:string"">{1}</item></FilterValues>
             <LimitFrom xsi:type=""xsd:int"">0</LimitFrom>
             <LimitCount xsi:type=""xsd:int"">0</LimitCount>
             </ns1:Game_Categories_Get></env:Body></env:Envelope>",
-
+            Pwd,
             categoryId
             );
 
@@ -961,7 +965,7 @@ private string FormatGamesJson(string gamesGetResponse)
             client.Headers.Add("SOAPAction", "\"" + "urn:Playerclub365.Intf-IPlayerclub365#Game_Categories_Get" + "\"");
 
             byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
-            byte[] responseBytes = client.UploadData("http://isapi-sw.profi.chat/casino365.dll/soap/IPlayerclub365", "POST", requestBytes);
+            byte[] responseBytes = client.UploadData(PlayerApi, "POST", requestBytes);
             return Encoding.UTF8.GetString(responseBytes);
         }
     }

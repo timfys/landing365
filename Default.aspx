@@ -278,7 +278,6 @@ CssClass="hidden"
             CssClass="w-full bg-brand-gold text-brand-bg py-3 md:py-4 px-4 md:px-6 text-lg md:text-2xl font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all transform hover:-translate-y-1 active:translate-y-1 flex items-center justify-center gap-2 relative overflow-hidden border-b-4 border-brand-gold-dark hover:border-b-[6px] shadow-xl whitespace-nowrap" />
           <asp:Button ID="btnPlay" runat="server"
             Text="Play &#8594;"
-			OnClientClick="window.location = 'https://www.playerclub365.com/'; return false;"
             CssClass="w-full bg-brand-gold text-brand-bg py-3 md:py-4 px-4 md:px-6 text-lg md:text-2xl font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all transform hover:-translate-y-1 active:translate-y-1 flex items-center justify-center gap-2 relative overflow-hidden border-b-4 border-brand-gold-dark hover:border-b-[6px] shadow-xl whitespace-nowrap" />
           <asp:Button ID="btnClaim2" runat="server"
             Text="Collect and Play &#8594;"
@@ -458,14 +457,14 @@ CssClass="hidden"
   //const gamesData =[];
   const gamesData = typeof gamesFromServer !== 'undefined' ? gamesFromServer : [];
   // Get category ID from URL parameter
-
+    const baseUrl = '<%= ConfigurationManager.AppSettings["BaseUrl"] %>';
   // Create game card DOM element
   function createGameCard(game) {
     const cardDiv = document.createElement('div');
     cardDiv.className = 'w-24 md:w-28 aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg border border-white/10 hover:border-brand-gold transition-all duration-300 transform hover:scale-105 flex-shrink-0';
     
     const img = document.createElement('img');
-    img.src = `https://www.playerclub365.com/images/poster.ashx?src=${game.src}`;
+    img.src = `${baseUrl}images/poster.ashx?src=${game.src}`;
     img.className = 'w-full h-full object-cover';
     img.alt = game.name;
     
