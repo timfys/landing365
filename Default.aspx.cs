@@ -910,11 +910,16 @@ private string FormatGamesJson(string gamesGetResponse)
                 <BonusType xsi:type=""xsd:int"">15</BonusType>
                 <Serial xsi:type=""xsd:int"">0</Serial>
                 <Value xsi:type=""xsd:double"">20</Value>
-                <NamesArray xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
-                <ValuesArray xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
+                <NamesArray enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
+				<item xsi:type=""xsd:string"">CustomField206</item>
+				</NamesArray>
+                <ValuesArray enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
+				<item xsi:type=""xsd:string"">{2}</item>
+				</ValuesArray>
                 </ns1:Entity_Bonuses_Update></env:Body></env:Envelope>",
             Pwd,
-            entityId
+            entityId,
+			DateTime.Now.AddMonths(6).ToString("yyyy-MM-dd")
             );
 
         using (var client = new WebClient())
