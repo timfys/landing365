@@ -550,6 +550,7 @@ private string FormatGamesJson(string gamesGetResponse)
         string entityId = "";
         var entityBonusesUpdateResponse = "";
         var entityBonusesUpdateResult = "";
+        var updateEntityResponse = "";
         // --- Route based on result code ---
         switch (resultCode)
         {
@@ -558,6 +559,7 @@ private string FormatGamesJson(string gamesGetResponse)
                 var regex = new Regex("\"EntityId\":(\\d+)");
                 var match = regex.Match(rawResponse);
                 entityId = match.Success ? match.Groups[1].Value : null;
+                updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
                 entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
                 Response.Redirect(SuccessUrl2, true);
                 break;
@@ -572,6 +574,7 @@ private string FormatGamesJson(string gamesGetResponse)
                 regex = new Regex("\"EntityId\":(\\d+)");
                 match = regex.Match(rawResponse);
                 entityId = match.Success ? match.Groups[1].Value : null;
+                updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
                 entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
                 Response.Redirect(SignInUrl, true);
                 break;
@@ -584,6 +587,7 @@ private string FormatGamesJson(string gamesGetResponse)
                 regex = new Regex("\"EntityId\":(\\d+)");
                 match = regex.Match(rawResponse);
                 entityId = match.Success ? match.Groups[1].Value : null;
+                updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
                 entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
                 Response.Redirect(SuccessUrl2, true);
                 break;
@@ -858,7 +862,61 @@ private string FormatGamesJson(string gamesGetResponse)
             return Encoding.UTF8.GetString(responseBytes);
         }
     }
-    
+    private string UpdateEntityInformation(string entityId, string countryISO)
+    {
+        string domain = HttpContext.Current.Request.Url.AbsoluteUri.Replace("https://", "").Replace("http://", "");
+        int endIndex = domain.IndexOf('/');
+        if (endIndex > 0)
+        {
+            domain = domain.Substring(0, endIndex);
+        }
+        string soapEnvelope = string.Format(
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<env:Envelope xmlns:env=""http://www.w3.org/2003/05/soap-envelope"" 
+xmlns:ns1=""urn:BusinessApiIntf-IBusinessAPI"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema""
+ xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+ xmlns:enc=""http://www.w3.org/2003/05/soap-encoding""
+ xmlns:ns2=""urn:CommonWSTypes""><env:Body>
+<ns1:Entity_Update env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
+<ol_EntityID xsi:type=""xsd:int"">27827</ol_EntityID>
+<ol_Username xsi:type=""xsd:string"">442033973506</ol_Username>
+<ol_Password xsi:type=""xsd:string"">{0}</ol_Password>
+<EntityId xsi:type=""xsd:int"">{1}</EntityId>
+<NamesArray enc:itemType=""xsd:string"" enc:arraySize=""5"" xsi:type=""ns2:ArrayOfString"">
+<item xsi:type=""xsd:string"">customfield9</item>
+<item xsi:type=""xsd:string"">customfield71</item>
+<item xsi:type=""xsd:string"">customfield68</item>
+<item xsi:type=""xsd:string"">customfield67</item>
+<item xsi:type=""xsd:string"">categoryId</item>
+</NamesArray>
+<ValuesArray enc:itemType=""xsd:string"" enc:arraySize=""5"" xsi:type=""ns2:ArrayOfString"">
+<item xsi:type=""xsd:string"">{2}</item>
+<item xsi:type=""xsd:string"">{3}</item>
+<item xsi:type=""xsd:string"">{4}</item>
+<item xsi:type=""xsd:string"">{5}</item>
+<item xsi:type=""xsd:string"">123</item>
+</ValuesArray><ImageFields xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
+<ImageValues xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
+</ns1:Entity_Update></env:Body></env:Envelope>",
+            Pwd,
+            entityId,
+            HttpContext.Current.Request.UserHostAddress,
+            HttpContext.Current.Request.Url.AbsoluteUri,
+            domain,
+            countryISO
+            );
+
+        using (var client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+            client.Headers.Add("Content-Type", "text/xml; charset=utf-8");
+            client.Headers.Add("SOAPAction", "\"" + "urn:BusinessApiIntf-IBusinessAPI#Entity_Update" + "\"");
+
+            byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
+            byte[] responseBytes = client.UploadData(BusinessApi, "POST", requestBytes);
+            return Encoding.UTF8.GetString(responseBytes);
+        }
+    }
     private string CheckIfBonusExists(string entityId)
     {
         string soapEnvelope = string.Format(
