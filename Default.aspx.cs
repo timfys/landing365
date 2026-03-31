@@ -901,7 +901,7 @@ xmlns:ns1=""urn:BusinessApiIntf-IBusinessAPI"" xmlns:xsd=""http://www.w3.org/200
             Pwd,
             entityId,
             HttpContext.Current.Request.UserHostAddress,
-            HttpContext.Current.Request.Url.AbsoluteUri,
+            HttpContext.Current.Request.Url.AbsoluteUri.Replace("default.aspx",""),
             domain,
             countryISO
             );
