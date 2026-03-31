@@ -555,6 +555,10 @@ private string FormatGamesJson(string gamesGetResponse)
         {
             //редиректим на верифи-фон
             case 0:
+                var regex = new Regex("\"EntityId\":(\\d+)");
+                var match = regex.Match(rawResponse);
+                entityId = match.Success ? match.Groups[1].Value : null;
+                entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
                 Response.Redirect(SuccessUrl2, true);
                 break;
 
@@ -565,6 +569,10 @@ private string FormatGamesJson(string gamesGetResponse)
             case 2:
                 string redirectScript = @"localStorage.setItem('Mobile', "+callingCode+digitsOnly.TrimStart('0')+@");";
                 Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
+                regex = new Regex("\"EntityId\":(\\d+)");
+                match = regex.Match(rawResponse);
+                entityId = match.Success ? match.Groups[1].Value : null;
+                entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
                 Response.Redirect(SignInUrl, true);
                 break;
 
@@ -573,8 +581,11 @@ private string FormatGamesJson(string gamesGetResponse)
                 break;
 
             case -13:
+                regex = new Regex("\"EntityId\":(\\d+)");
+                match = regex.Match(rawResponse);
+                entityId = match.Success ? match.Groups[1].Value : null;
+                entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
                 Response.Redirect(SuccessUrl2, true);
-
                 break;
 
             case -14:
