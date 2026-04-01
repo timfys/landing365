@@ -52,7 +52,7 @@ public partial class Default : Page
         if (!IsPostBack)
         {
             DataBind();
-            string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
+            string baseUrl = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "BaseUrlLive" : "BaseUrl"];
             btnPlay.OnClientClick = "window.location = '"+baseUrl+"'; return false;";
         }
         /*HttpCookie referrerCookie = new HttpCookie("Referer", "https://www.google.com/");
