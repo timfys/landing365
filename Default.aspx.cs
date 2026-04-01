@@ -55,6 +55,10 @@ public partial class Default : Page
             string baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
             btnPlay.OnClientClick = "window.location = '"+baseUrl+"'; return false;";
         }
+        /*HttpCookie referrerCookie = new HttpCookie("Referer", "https://www.google.com/");
+        referrerCookie.Domain = Request.Url.Host; // или явно укажите домен, например, "localhost"
+        referrerCookie.Path = "/"; // кука будет доступна на всём сайте
+        Response.Cookies.Add(referrerCookie);*/
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
         Response.Cache.SetNoStore();
         Response.Cache.SetExpires(DateTime.UtcNow.AddSeconds(-1));
@@ -870,40 +874,54 @@ private string FormatGamesJson(string gamesGetResponse)
         {
             domain = domain.Substring(0, endIndex);
         }
+        string clientIp = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+        if (string.IsNullOrEmpty(clientIp) || clientIp == "::1" || clientIp.StartsWith("127."))
+        {
+            clientIp = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            if (clientIp == "::1" || clientIp.StartsWith("127."))
+            {
+                clientIp = "192.168.1.1"; // или другой тестовый IP
+            }
+        }
+
+        string referrerUrl = "";
+        if(Request.Cookies["Referer"] != null)
+            referrerUrl = Request.Cookies["Referer"].Value;
+
         string soapEnvelope = string.Format(
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<env:Envelope xmlns:env=""http://www.w3.org/2003/05/soap-envelope"" 
-xmlns:ns1=""urn:BusinessApiIntf-IBusinessAPI"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema""
- xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
- xmlns:enc=""http://www.w3.org/2003/05/soap-encoding""
- xmlns:ns2=""urn:CommonWSTypes""><env:Body>
-<ns1:Entity_Update env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
-<ol_EntityID xsi:type=""xsd:int"">27827</ol_EntityID>
-<ol_Username xsi:type=""xsd:string"">442033973506</ol_Username>
-<ol_Password xsi:type=""xsd:string"">{0}</ol_Password>
-<EntityId xsi:type=""xsd:int"">{1}</EntityId>
-<NamesArray enc:itemType=""xsd:string"" enc:arraySize=""5"" xsi:type=""ns2:ArrayOfString"">
-<item xsi:type=""xsd:string"">customfield9</item>
-<item xsi:type=""xsd:string"">customfield71</item>
-<item xsi:type=""xsd:string"">customfield68</item>
-<item xsi:type=""xsd:string"">customfield67</item>
-<item xsi:type=""xsd:string"">categoryId</item>
-</NamesArray>
-<ValuesArray enc:itemType=""xsd:string"" enc:arraySize=""5"" xsi:type=""ns2:ArrayOfString"">
-<item xsi:type=""xsd:string"">{2}</item>
-<item xsi:type=""xsd:string"">{3}</item>
-<item xsi:type=""xsd:string"">{4}</item>
-<item xsi:type=""xsd:string"">{5}</item>
-<item xsi:type=""xsd:string"">123</item>
-</ValuesArray><ImageFields xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
-<ImageValues xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
-</ns1:Entity_Update></env:Body></env:Envelope>",
+                <env:Envelope xmlns:env=""http://www.w3.org/2003/05/soap-envelope"" 
+                xmlns:ns1=""urn:BusinessApiIntf-IBusinessAPI"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema""
+                 xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+                 xmlns:enc=""http://www.w3.org/2003/05/soap-encoding""
+                 xmlns:ns2=""urn:CommonWSTypes""><env:Body>
+                <ns1:Entity_Update env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
+                <ol_EntityID xsi:type=""xsd:int"">27827</ol_EntityID>
+                <ol_Username xsi:type=""xsd:string"">442033973506</ol_Username>
+                <ol_Password xsi:type=""xsd:string"">{0}</ol_Password>
+                <EntityId xsi:type=""xsd:int"">{1}</EntityId>
+                <NamesArray enc:itemType=""xsd:string"" enc:arraySize=""5"" xsi:type=""ns2:ArrayOfString"">
+                <item xsi:type=""xsd:string"">customfield9</item>
+                <item xsi:type=""xsd:string"">customfield71</item>
+                <item xsi:type=""xsd:string"">customfield68</item>
+                <item xsi:type=""xsd:string"">customfield67</item>
+                <item xsi:type=""xsd:string"">categoryId</item>
+                </NamesArray>
+                <ValuesArray enc:itemType=""xsd:string"" enc:arraySize=""5"" xsi:type=""ns2:ArrayOfString"">
+                <item xsi:type=""xsd:string"">{2}</item>
+                <item xsi:type=""xsd:string"">{3}</item>
+                <item xsi:type=""xsd:string"">{4}</item>
+                <item xsi:type=""xsd:string"">{5}</item>
+                <item xsi:type=""xsd:string"">123</item>
+                </ValuesArray><ImageFields xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
+                <ImageValues xsi:nil=""true"" xsi:type=""ns2:ArrayOfString""/>
+                </ns1:Entity_Update></env:Body></env:Envelope>",
             Pwd,
             entityId,
-            HttpContext.Current.Request.UserHostAddress,
-            HttpContext.Current.Request.Url.AbsoluteUri.Replace("default.aspx",""),
+            clientIp,
+            referrerUrl,
             domain,
-            countryISO
+            "EN"
             );
 
         using (var client = new WebClient())
