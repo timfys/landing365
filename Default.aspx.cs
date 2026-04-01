@@ -187,6 +187,7 @@ public partial class Default : Page
                 //ShowSuccess(currentEntityId);
                 if (currentEntityId != "" && currentEntityId != " ")
                 {
+                    var logResp = CallLog(currentEntityId);
                     entityBonusesCheckResponse = CheckIfBonusExists(currentEntityId);
                 }
 
@@ -563,6 +564,7 @@ private string FormatGamesJson(string gamesGetResponse)
                 var regex = new Regex("\"EntityId\":(\\d+)");
                 var match = regex.Match(rawResponse);
                 entityId = match.Success ? match.Groups[1].Value : null;
+                var logResp = CallLog(entityId);
                 updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
                 entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
                 Response.Redirect(SuccessUrl2, true);
@@ -578,8 +580,9 @@ private string FormatGamesJson(string gamesGetResponse)
                 regex = new Regex("\"EntityId\":(\\d+)");
                 match = regex.Match(rawResponse);
                 entityId = match.Success ? match.Groups[1].Value : null;
+                logResp = CallLog(entityId);
                 updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
-                entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
+                entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId); 
                 Response.Redirect(SignInUrl, true);
                 break;
 
@@ -591,6 +594,7 @@ private string FormatGamesJson(string gamesGetResponse)
                 regex = new Regex("\"EntityId\":(\\d+)");
                 match = regex.Match(rawResponse);
                 entityId = match.Success ? match.Groups[1].Value : null;
+                logResp = CallLog(entityId);
                 updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
                 entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
                 Response.Redirect(SuccessUrl2, true);
@@ -924,6 +928,80 @@ private string FormatGamesJson(string gamesGetResponse)
             client.Encoding = Encoding.UTF8;
             client.Headers.Add("Content-Type", "text/xml; charset=utf-8");
             client.Headers.Add("SOAPAction", "\"" + "urn:BusinessApiIntf-IBusinessAPI#Entity_Update" + "\"");
+
+            byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
+            byte[] responseBytes = client.UploadData(BusinessApi, "POST", requestBytes);
+            return Encoding.UTF8.GetString(responseBytes);
+        }
+    } 
+    private int GetOsFromUserAgent(string userAgent)
+    {
+        if (userAgent.Contains("Android"))
+            return 2; // Android
+        else if (userAgent.Contains("iPhone") || userAgent.Contains("iPad") || userAgent.Contains("iPod"))
+            return 3; // iOS
+        else if (userAgent.Contains("Macintosh") || userAgent.Contains("Mac OS X"))
+            return 1; // Web browser (Mac)
+        else if (userAgent.Contains("Linux"))
+            return 1; // Web browser (Linux)
+        else if (userAgent.Contains("Windows"))
+            return 0; // Windows
+        else
+            return 1; // По умолчанию: Web browser
+    }
+    private string CallLog(string entityId)
+    {
+        string domain = HttpContext.Current.Request.Url.AbsoluteUri;
+        int endIndex = domain.IndexOf('/');
+        if (endIndex > 0)
+        {
+            domain = domain.Substring(0, endIndex);
+        }
+        string clientIp = "";
+        if (Request.Cookies["clientIp"] != null)
+        {
+              clientIp = Request.Cookies["clientIp"].Value.ToString();
+        }
+
+        string referrerUrl = "";
+        if(Request.Cookies["Referer"] != null)
+            referrerUrl = Request.Cookies["Referer"].Value;
+        string soapEnvelope = string.Format(
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<env:Envelope xmlns:env=""http://www.w3.org/2003/05/soap-envelope""
+ xmlns:ns1=""urn:BusinessApiIntf-IBusinessAPI""
+ xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" 
+xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+ xmlns:enc=""http://www.w3.org/2003/05/soap-encoding""
+ xmlns:ns2=""urn:CommonWSTypes"">
+<env:Body><ns1:Entity_Logtraffic env:encodingStyle=""http://www.w3.org/2003/05/soap-encoding"">
+<ol_EntityID xsi:type=""xsd:int"">{0}</ol_EntityID>
+<device xsi:type=""xsd:int"">{1}</device>
+<System xsi:type=""xsd:string"">{2}</System>
+<IP xsi:type=""xsd:string"">{3}</IP>
+<URL xsi:type=""xsd:string"">{4}</URL>
+<NamesArray enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
+<item xsi:type=""xsd:string"">referer</item>
+<item xsi:type=""xsd:string"">acceptLanguage</item>
+</NamesArray>
+<ValuesArray enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
+<item xsi:type=""xsd:string"">{5}</item>
+<item xsi:type=""xsd:string"">{6}</item></ValuesArray>
+</ns1:Entity_Logtraffic></env:Body></env:Envelope>",
+            entityId,
+            GetOsFromUserAgent(Request.UserAgent).ToString(),
+            Request.UserAgent,
+            clientIp,
+            domain,
+            referrerUrl,
+            "EN"
+            );
+
+        using (var client = new WebClient())
+        {
+            client.Encoding = Encoding.UTF8;
+            client.Headers.Add("Content-Type", "text/xml; charset=utf-8");
+            client.Headers.Add("SOAPAction", "\"" + "urn:BusinessApiIntf-IBusinessAPI#Entity_Logtraffic" + "\"");
 
             byte[] requestBytes  = Encoding.UTF8.GetBytes(soapEnvelope);
             byte[] responseBytes = client.UploadData(BusinessApi, "POST", requestBytes);
