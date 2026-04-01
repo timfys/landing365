@@ -457,8 +457,17 @@ CssClass="hidden"
   //const gamesData =[];
   const gamesData = typeof gamesFromServer !== 'undefined' ? gamesFromServer : [];
   // Get category ID from URL parameter
-    const baseUrl = '<%= ConfigurationManager.AppSettings["BaseUrl"] %>';
-  // Create game card DOM element
+    const currentUrl = window.location.href;
+    const isLiveEnvironment = currentUrl.includes("www.playerclub365.com");
+
+    const baseUrl = '<%=
+        ConfigurationManager.AppSettings[
+            Request.Url.AbsoluteUri.Contains("www.playerclub365.com")
+                ? "BaseUrlLive"
+                : "BaseUrl"
+        ]
+    %>';
+    // Create game card DOM element
   function createGameCard(game) {
     const cardDiv = document.createElement('div');
     cardDiv.className = 'w-24 md:w-28 aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg border border-white/10 hover:border-brand-gold transition-all duration-300 transform hover:scale-105 flex-shrink-0';

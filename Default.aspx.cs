@@ -21,13 +21,13 @@ using Org.BouncyCastle.Crypto.Engines;
 using System.Configuration;
 public partial class Default : Page
 {
-     string SmartWinnersApi = ConfigurationManager.AppSettings["SmartWinnersApi"];
-     string PlayerApi = ConfigurationManager.AppSettings["PlayerApi"];
-     string BusinessApi = ConfigurationManager.AppSettings["BusinessApi"];
-     string Pwd = ConfigurationManager.AppSettings["Pwd"];
-     string SuccessUrl = ConfigurationManager.AppSettings["SuccessUrl"];
-     string SignInUrl = ConfigurationManager.AppSettings["SignInUrl"];
-     string BaseUrl = ConfigurationManager.AppSettings["BaseUrl"];
+    string SmartWinnersApi = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "SmartWinnersApiLive" : "SmartWinnersApi"];
+    string PlayerApi = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "PlayerApiLive" : "PlayerApi"];
+    string BusinessApi = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "BusinessApiLive" : "BusinessApi"];
+    string Pwd = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "PwdLive" : "Pwd"];
+    string SuccessUrl = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "SuccessUrlLive" : "SuccessUrl"];
+    string SignInUrl = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "SignInUrlLive" : "SignInUrl"];
+    string BaseUrl = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "BaseUrlLive" : "BaseUrl"];
     
     private const string SoapAction =
         "urn:SmartWinners.Intf-ISmartWinners#Signin_With_Phone";
