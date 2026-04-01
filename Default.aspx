@@ -864,6 +864,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-
+<script>
+fetch('https://api.ipify.org?format=json')
+  .then(response => response.json())
+  .then(data => {
+    document.cookie = `clientIp=${data.ip}; path=/`;
+  });
+</script>
 </body>
 </html>

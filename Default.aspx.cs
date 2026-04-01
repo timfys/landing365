@@ -874,20 +874,15 @@ private string FormatGamesJson(string gamesGetResponse)
         {
             domain = domain.Substring(0, endIndex);
         }
-        string clientIp = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-        if (string.IsNullOrEmpty(clientIp) || clientIp == "::1" || clientIp.StartsWith("127."))
+        string clientIp = "";
+        if (Request.Cookies["clientIp"] != null)
         {
-            clientIp = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-            if (clientIp == "::1" || clientIp.StartsWith("127."))
-            {
-                clientIp = "192.168.1.1"; // или другой тестовый IP
-            }
+              clientIp = Request.Cookies["clientIp"].Value.ToString();
         }
 
         string referrerUrl = "";
         if(Request.Cookies["Referer"] != null)
             referrerUrl = Request.Cookies["Referer"].Value;
-
         string soapEnvelope = string.Format(
             @"<?xml version=""1.0"" encoding=""UTF-8""?>
                 <env:Envelope xmlns:env=""http://www.w3.org/2003/05/soap-envelope"" 
