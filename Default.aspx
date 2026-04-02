@@ -367,7 +367,7 @@ CssClass="hidden"
             </button>
             <div class="faq-body overflow-hidden max-h-0 transition-all duration-300 ease-in-out">
               <div class="px-6 pb-6 pt-0 text-brand-text-muted text-base leading-relaxed border-t border-brand-border/50 mt-2 pt-4">
-                Simply enter your mobile number in the form above. We will send you a secure verification link via SMS. Once verified, the 10 coins are instantly added to your balance.
+                Simply enter your mobile number in the form above. We will send you a secure verification link via SMS. Once verified, the 20 coins are instantly added to your balance.
               </div>
             </div>
           </div>
