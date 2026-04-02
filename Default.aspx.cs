@@ -937,26 +937,24 @@ private string FormatGamesJson(string gamesGetResponse)
     private int GetOsFromUserAgent(string userAgent)
     {
         if (userAgent.Contains("Android"))
-            return 2; // Android
+            return 1; // Android
         else if (userAgent.Contains("iPhone") || userAgent.Contains("iPad") || userAgent.Contains("iPod"))
-            return 3; // iOS
+            return 2; // iOS
         else if (userAgent.Contains("Macintosh") || userAgent.Contains("Mac OS X"))
-            return 1; // Web browser (Mac)
+            return 0; // Web browser (Mac)
         else if (userAgent.Contains("Linux"))
-            return 1; // Web browser (Linux)
+            return 5; // Web browser (Linux)
         else if (userAgent.Contains("Windows"))
-            return 0; // Windows
+            return 3; // Windows
         else
-            return 1; // По умолчанию: Web browser
+            return 4; // По умолчанию: Web browser
     }
     private string CallLog(string entityId)
     {
-        string domain = HttpContext.Current.Request.Url.AbsoluteUri;
-        int endIndex = domain.IndexOf('/');
-        if (endIndex > 0)
-        {
-            domain = domain.Substring(0, endIndex);
-        }
+    	string domain = HttpContext.Current.Request.Url.Host +
+                    HttpContext.Current.Request.Path +
+                    HttpContext.Current.Request.Url.Query;
+
         string clientIp = "";
         if (Request.Cookies["clientIp"] != null)
         {
