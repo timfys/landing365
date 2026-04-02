@@ -964,9 +964,9 @@ private string FormatGamesJson(string gamesGetResponse)
     }
 
     // Формируем полный URL
-    string domain = $"{scheme}://{host}";
+    string domain = scheme+"://"+host;
 
-    domain += $"{path}{query}";
+    domain += path+query;
 
         string clientIp = "";
         if (Request.Cookies["clientIp"] != null)
