@@ -951,9 +951,22 @@ private string FormatGamesJson(string gamesGetResponse)
     }
     private string CallLog(string entityId)
     {
-    	string domain = HttpContext.Current.Request.Url.Host +
-                    HttpContext.Current.Request.Path +
-                    HttpContext.Current.Request.Url.Query;
+    string scheme = HttpContext.Current.Request.Url.Scheme; // "http" или "https"
+    string host = HttpContext.Current.Request.Url.Host;
+    int port = HttpContext.Current.Request.Url.Port;
+    string path = HttpContext.Current.Request.Path;
+    string query = HttpContext.Current.Request.Url.Query;
+
+    // Убираем "default.aspx" из пути, если он есть
+    if (!string.IsNullOrEmpty(path) && path.EndsWith("/default.aspx", StringComparison.OrdinalIgnoreCase))
+    {
+        path = path.Replace("/default.aspx", "");
+    }
+
+    // Формируем полный URL
+    string domain = $"{scheme}://{host}";
+
+    domain += $"{path}{query}";
 
         string clientIp = "";
         if (Request.Cookies["clientIp"] != null)
