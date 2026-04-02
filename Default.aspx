@@ -25,8 +25,8 @@
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://playerclub365.com/">
-  <meta property="twitter:title" content="Claim Your 10 FREE Coins – PlayerClub365">
-  <meta property="twitter:description" content="You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free.">
+  <meta property="twitter:title" content="Claim Your 20 free Coins – PlayerClub365">
+  <meta property="twitter:description" content="You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free.">
   <meta property="twitter:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+10+FREE+COINS">
 
   <!-- Icons -->
@@ -181,7 +181,7 @@
         <span class="inline-block transform hover:scale-110 transition-transform">
           <svg class="w-16 h-16 md:w-24 md:h-24 text-brand-gold" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="#0B0F12" font-weight="bold">$</text></svg>
         </span>
-        <span class="text-brand-gold drop-shadow-[0_0_25px_rgba(255,215,0,0.5)]">10 FREE COINS</span>
+        <span class="text-brand-gold drop-shadow-[0_0_25px_rgba(255,215,0,0.5)]">20 free COINS</span>
         <span class="inline-block transform hover:scale-110 transition-transform">
           <svg class="w-16 h-16 md:w-24 md:h-24 text-brand-gold" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="#0B0F12" font-weight="bold">$</text></svg>
         </span>
@@ -199,7 +199,7 @@
           Claim Gift &amp; Play Instantly
         </h2>
         <p class="text-base md:text-xl text-brand-text-muted mb-8 max-w-2xl mx-auto">
-          Select your country and enter your number to unlock 10 Free Coins.
+          Select your country and enter your number to unlock 20 free Coins.
         </p>
 
         <!-- Error message placeholder -->
@@ -325,7 +325,7 @@ CssClass="hidden"
           <div class="mb-4 p-3 bg-brand-bg rounded-full w-fit">
             <svg class="w-6 h-6 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a4 4 0 00-4-4H6a2 2 0 00-2 2v2m8 0V6a4 4 0 014-4h2a2 2 0 012 2v2M5 20h14a2 2 0 002-2V10a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
           </div>
-          <h3 class="text-brand-gold text-xl font-bold mb-2">10 Free Coins</h3>
+          <h3 class="text-brand-gold text-xl font-bold mb-2">20 free Coins</h3>
           <p class="text-brand-text-muted text-sm leading-relaxed">Start spinning the moment you claim! No waiting, instant fun.</p>
         </div>
         <div class="bg-brand-panel border border-brand-border rounded-2xl p-6 hover:-translate-y-2 transition-all duration-300 hover:border-brand-gold/30 hover:shadow-xl">
@@ -378,7 +378,7 @@ CssClass="hidden"
             </button>
             <div class="faq-body overflow-hidden max-h-0 transition-all duration-300 ease-in-out">
               <div class="px-6 pb-6 pt-0 text-brand-text-muted text-base leading-relaxed border-t border-brand-border/50 mt-2 pt-4">
-                Correct! The 10 free coins are a welcome gift for our new community members. No deposit or purchase is required to claim this specific offer.
+                Correct! The 20 free coins are a welcome gift for our new community members. No deposit or purchase is required to claim this specific offer.
               </div>
             </div>
           </div>

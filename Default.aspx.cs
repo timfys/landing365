@@ -96,15 +96,15 @@ public partial class Default : Page
         string script = "var gamesFromServer = " + gamesJson + ";";
         Page.ClientScript.RegisterStartupScript(this.GetType(), "gamesData", script, true);
 
-        var titleContent = "Claim Your 10 FREE Coins &#8211; PlayerClub365";
+        var titleContent = "Claim Your 20 free Coins &#8211; PlayerClub365";
         metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
         title.Text = "<title>" + titleContent + "</title>";
         desc.Text =
-            "<meta name=\"description\" content=\"You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
+            "<meta name=\"description\" content=\"You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
         ogDesc.Text =
-            "<meta property=\"og:description\" content=\"You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
+            "<meta property=\"og:description\" content=\"You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
         ogTitle.Text =
-            "<meta property=\"og:title\" content=\"Claim Your 10 FREE Coins – PlayerClub365\">\n";
+            "<meta property=\"og:title\" content=\"Claim Your 20 free Coins – PlayerClub365\">\n";
 
         string iso = GetUserIsoFromCloudFlare(HttpContext.Current);
         Page.ClientScript.RegisterStartupScript(
@@ -157,7 +157,7 @@ public partial class Default : Page
                     ";
                         Page.ClientScript.RegisterStartupScript(this.GetType(), "showCategoryDiv", showDivScript, true);
 
-                        titleContent = categoryName + " &#8211; Claim Your 10 FREE Coins &#8211; PlayerClub365";
+                        titleContent = categoryName + " &#8211; Claim Your 20 free Coins &#8211; PlayerClub365";
                         metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
                         title.Text = "<title>" + titleContent + "</title>";
                         ogTitle.Text = "<meta property=\"og:title\" content=\"" + titleContent + "\">\n";
@@ -166,9 +166,9 @@ public partial class Default : Page
                     if (!string.IsNullOrEmpty(ogDescription))
                     {
                         desc.Text = "<meta name=\"description\" content=\"" + ogDescription +
-                                    " &#8211; You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
+                                    " &#8211; You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\"/>\n";
                         ogDesc.Text = "<meta property=\"og:description\" content=\"" + ogDescription +
-                                      " &#8211; You've been gifted 10 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
+                                      " &#8211; You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
                     }
                 }
             }
