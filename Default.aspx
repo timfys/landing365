@@ -19,7 +19,7 @@
   <meta property="og:url" content="https://playerclub365.com/">
   <asp:Literal ID="ogTitle" runat="server"></asp:Literal>
   <asp:Literal ID="ogDesc" runat="server"></asp:Literal>
-  <meta property="og:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+10+FREE+COINS">
+  <meta property="og:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+20+FREE+COINS">
   <meta property="og:site_name" content="PlayerClub365">
 
   <!-- Twitter -->
@@ -27,7 +27,7 @@
   <meta property="twitter:url" content="https://playerclub365.com/">
   <meta property="twitter:title" content="Claim Your 20 free Coins – PlayerClub365">
   <meta property="twitter:description" content="You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free.">
-  <meta property="twitter:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+10+FREE+COINS">
+  <meta property="twitter:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+20+FREE+COINS">
 
   <!-- Icons -->
   <link rel="icon" type="image/png" href="https://placehold.co/32x32/FFD700/000000?text=P">
