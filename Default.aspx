@@ -272,15 +272,15 @@ CssClass="hidden"
 
           <!-- Submit Button -->
           <asp:Button ID="btnClaim" runat="server"
-            Text="Collect and Play &#8594;"
+            Text="Collect and Play "
             OnClick="btnClaim_Click"
             OnClientClick="return preparePhoneAndSubmit() && showLoading();"
             CssClass="w-full bg-brand-gold text-brand-bg py-3 md:py-4 px-4 md:px-6 text-lg md:text-2xl font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all transform hover:-translate-y-1 active:translate-y-1 flex items-center justify-center gap-2 relative overflow-hidden border-b-4 border-brand-gold-dark hover:border-b-[6px] shadow-xl whitespace-nowrap" />
           <asp:Button ID="btnPlay" runat="server"
-            Text="Play &#8594;"
+            Text="Play "
             CssClass="w-full bg-brand-gold text-brand-bg py-3 md:py-4 px-4 md:px-6 text-lg md:text-2xl font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all transform hover:-translate-y-1 active:translate-y-1 flex items-center justify-center gap-2 relative overflow-hidden border-b-4 border-brand-gold-dark hover:border-b-[6px] shadow-xl whitespace-nowrap" />
           <asp:Button ID="btnClaim2" runat="server"
-            Text="Collect and Play &#8594;"
+            Text="Collect and Play "
             OnClick="btnClaim2_Click"
             OnClientClick="return showLoading();"
             CssClass="w-full bg-brand-gold text-brand-bg py-3 md:py-4 px-4 md:px-6 text-lg md:text-2xl font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all transform hover:-translate-y-1 active:translate-y-1 flex items-center justify-center gap-2 relative overflow-hidden border-b-4 border-brand-gold-dark hover:border-b-[6px] shadow-xl whitespace-nowrap" />
