@@ -25,7 +25,7 @@
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://playerclub365.com/">
-  <meta property="twitter:title" content="Claim Your 20 free Coins – PlayerClub365">
+  <meta property="twitter:title" content="Claim Your 20 free Coins - PlayerClub365">
   <meta property="twitter:description" content="You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free.">
   <meta property="twitter:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+20+FREE+COINS">
 

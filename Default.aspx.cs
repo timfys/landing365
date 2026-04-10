@@ -96,7 +96,7 @@ public partial class Default : Page
         string script = "var gamesFromServer = " + gamesJson + ";";
         Page.ClientScript.RegisterStartupScript(this.GetType(), "gamesData", script, true);
 
-        var titleContent = "Claim Your 20 free Coins – PlayerClub365";
+        var titleContent = "Claim Your 20 free Coins - PlayerClub365";
         metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
         title.Text = "<title>" + titleContent + "</title>";
         desc.Text =
@@ -104,7 +104,7 @@ public partial class Default : Page
         ogDesc.Text =
             "<meta property=\"og:description\" content=\"You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free. No purchase necessary.\">\n";
         ogTitle.Text =
-            "<meta property=\"og:title\" content=\"Claim Your 20 free Coins – PlayerClub365\">\n";
+            "<meta property=\"og:title\" content=\"Claim Your 20 free Coins - PlayerClub365\">\n";
 
         string iso = GetUserIsoFromCloudFlare(HttpContext.Current);
         Page.ClientScript.RegisterStartupScript(
@@ -157,7 +157,7 @@ public partial class Default : Page
                     ";
                         Page.ClientScript.RegisterStartupScript(this.GetType(), "showCategoryDiv", showDivScript, true);
 
-                        titleContent = categoryName + " Claim Your 20 free Coins – PlayerClub365";
+                        titleContent = categoryName + " Claim Your 20 free Coins - PlayerClub365";
                         metaTitle.Text = "<meta name=\"title\" content=\"" + titleContent + "\">";
                         title.Text = "<title>" + titleContent + "</title>";
                         ogTitle.Text = "<meta property=\"og:title\" content=\"" + titleContent + "\">\n";
