@@ -549,8 +549,6 @@ private string FormatGamesJson(string gamesGetResponse)
             ShowError("A network error occurred. Please try again.");
             return;
         }
-		ShowSuccess(rawResponse);
-
         var entityFindResponse = "";
         string entityId = "";
         var entityBonusesUpdateResponse = "";
@@ -575,20 +573,23 @@ private string FormatGamesJson(string gamesGetResponse)
                 break;
             //юзер найден, делаем бонус
             case 2:
-                string redirectScript = @"localStorage.setItem('Mobile', "+callingCode+digitsOnly.TrimStart('0')+@");";
-                Page.ClientScript.RegisterStartupScript(this.GetType(), "redirectAfterSuccess", redirectScript, true);
                 regex = new Regex("\"EntityId\":(\\d+)");
                 match = regex.Match(rawResponse);
                 entityId = match.Success ? match.Groups[1].Value : null;
                 logResp = CallLog(entityId);
                 updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
-                entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId); 
-                Response.Redirect(SignInUrl, true);
+                entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
+                Response.Redirect(SuccessUrl2, true);
                 break;
 
             case 3:
-                ShowError("You must wait before requesting another SMS. Please try again later.");
-                break;
+                regex = new Regex("\"EntityId\":(\\d+)");
+                match = regex.Match(rawResponse);
+                entityId = match.Success ? match.Groups[1].Value : null;
+                logResp = CallLog(entityId);
+                updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
+                entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
+                Response.Redirect(SuccessUrl2, true);                break;
 
             case -13:
                 regex = new Regex("\"EntityId\":(\\d+)");
