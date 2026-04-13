@@ -473,7 +473,7 @@ CssClass="hidden"
     cardDiv.className = 'w-24 md:w-28 aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg border border-white/10 hover:border-brand-gold transition-all duration-300 transform hover:scale-105 flex-shrink-0';
     
     const img = document.createElement('img');
-    img.src = `${baseUrl}images/poster.ashx?src=${game.src}`;
+    img.src = `${baseUrl}images/posters/${game.id}.jpg`;
     img.className = 'w-full h-full object-cover';
     img.alt = game.name;
     

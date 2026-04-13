@@ -407,6 +407,7 @@ private string FormatGamesJson(string gamesGetResponse)
 
         foreach (var game in gamesList)
         {
+            string id = game.ContainsKey("gameId") ? game["gameId"].ToString() ?? "" : "";
             string gameName = game.ContainsKey("game_name") ? game["game_name"].ToString() ?? "" : "";
             string categoryId = game.ContainsKey("categoryId") ? game["categoryId"].ToString() ?? "" : "";
             string gameImage = game.ContainsKey("game_image") ? game["game_image"].ToString() ?? "" : "";
@@ -421,6 +422,7 @@ private string FormatGamesJson(string gamesGetResponse)
 
             formattedGames.Add(new
             {
+                id = id,
                 name = gameName,
                 cid = categoryId,
                 color = defaultColors[colorIndex % defaultColors.Length],
@@ -759,6 +761,7 @@ private string FormatGamesJson(string gamesGetResponse)
             <Ol_Password xsi:type=""xsd:string"">{0}</Ol_Password>
             <Lang_Code xsi:type=""xsd:string"">en</Lang_Code>
             <Fields enc:itemType=""xsd:string"" enc:arraySize=""2"" xsi:type=""ns2:ArrayOfString"">
+            <item xsi:type=""xsd:string"">pg.gameId</item>
             <item xsi:type=""xsd:string"">game_name</item>
             <item xsi:type=""xsd:string"">categoryId</item>
             <item xsi:type=""xsd:string"">game_image</item>
