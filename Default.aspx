@@ -302,6 +302,7 @@ CssClass="hidden"
     </section>
       <div class="text-center mb-10 hidden" id="categoryNameDiv">
         <h3 id="categoryName" class="text-2xl md:text-3xl text-white font-bold mb-3">Recently played</h3>
+        <h4 id="categoryDescription" class="text-xl md:text-xl text-white font-bold mb-3"></h4>
         <div class="w-20 h-1 bg-brand-gold mx-auto rounded-full"></div>
       </div> 
 <!-- ===== GAME SLIDER ===== -->
@@ -476,7 +477,9 @@ CssClass="hidden"
     img.src = `${baseUrl}images/posters/${game.id}.jpg`;
     img.className = 'w-full h-full object-cover';
     img.alt = game.name;
-    
+    img.onerror = function () {
+      cardDiv.remove();
+    };
     const overlayDiv = document.createElement('div');
     overlayDiv.className = 'absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/90 to-transparent';
     

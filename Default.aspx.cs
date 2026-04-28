@@ -152,6 +152,10 @@ public partial class Default : Page
                                 if(h) {
                                     h.innerText = '" + EscapeJsString(categoryName) + @"';
                                 }
+                                var d = document.getElementById('categoryDescription');
+                                if(h) {
+                                    d.innerText = '" + EscapeJsString(ogDescription) + @"';
+                                }
                             }
                         }, 100);
                     ";
