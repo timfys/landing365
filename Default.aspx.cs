@@ -180,53 +180,85 @@ public partial class Default : Page
 
         var cookie = Request.Cookies["cred"];
         var entityBonusesCheckResponse = "";
-        var entityBonusesCheckResult = "";
-        if (cookie != null)
+        string currentEntityId = null;
+
+        bool hasValidCredential = false;
+
+        if (cookie != null && !string.IsNullOrWhiteSpace(cookie.Value))
         {
             try
             {
                 string base64Token = HttpUtility.UrlDecode(cookie.Value);
                 var credential = DecryptCredential(base64Token);
-                var currentEntityId = credential.EntityId.ToString();
-                //ShowSuccess(currentEntityId);
-                if (currentEntityId != "" && currentEntityId != " ")
+
+                if (credential != null && credential.EntityId > 0)
                 {
-                    var logResp = CallLog(currentEntityId);
-                    entityBonusesCheckResponse = CheckIfBonusExists(currentEntityId);
+                    currentEntityId = credential.EntityId.ToString();
+                    hasValidCredential = true;
                 }
+            }
+            catch
+            {
+                // cookie битый → игнорируем полностью
+                hasValidCredential = false;
+                currentEntityId = null;
+            }
+        }
+
+// DEFAULT STATE (важно для SEO и стабильности)
+        bool hasBonusField = false;
+
+        if (hasValidCredential)
+        {
+            try
+            {
+                CallLog(currentEntityId);
+                entityBonusesCheckResponse = CheckIfBonusExists(currentEntityId);
 
                 if (!string.IsNullOrWhiteSpace(entityBonusesCheckResponse))
                 {
-                    var match = entityBonusesCheckResponse.Contains("customfield203");
-
-                    if (!match)
-                    {
-                        phoneInputContainer.Visible = false;
-                        readonlyPhoneContainer.Visible = false;
-                        txtPhone.Visible = false;
-                        btnClaim.Visible = false;
-                        btnPlay.Visible = false;
-                        btnClaim2.Visible = true;
-                    }
-                    else
-                    {
-                        phoneInputContainer.Visible = false;
-                        readonlyPhoneContainer.Visible = false;
-                        btnClaim.Visible = false;
-                        btnPlay.Visible = true;
-                        btnClaim2.Visible = false;
-                        ShowSuccess("Bonuses already given for this user");
-                    }
-                }
-                else
-                {
-                    ShowError("Error while giving bonuses. Try again later");
+                    hasBonusField = entityBonusesCheckResponse.Contains("customfield203");
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                ShowSuccess(" Ошибка расшифровки: " + ex.Message);
+                entityBonusesCheckResponse = null;
             }
+        }
+
+// === UI LOGIC ===
+
+// нет данных вообще → считаем как guest (одинаково для Google + новых пользователей)
+        if (!hasValidCredential || string.IsNullOrWhiteSpace(entityBonusesCheckResponse))
+        {
+            phoneInputContainer.Visible = true;
+            readonlyPhoneContainer.Visible = false;
+            txtPhone.Visible = true;
+
+            btnClaim.Visible = true;
+            btnPlay.Visible = false;
+            btnClaim2.Visible = false;
+
+            return;
+        }
+
+// валидный пользователь
+        phoneInputContainer.Visible = false;
+        readonlyPhoneContainer.Visible = false;
+
+        if (!hasBonusField)
+        {
+            btnClaim.Visible = false;
+            btnPlay.Visible = false;
+            btnClaim2.Visible = true;
+        }
+        else
+        {
+            btnClaim.Visible = false;
+            btnPlay.Visible = true;
+            btnClaim2.Visible = false;
+
+            ShowSuccess("Bonuses already given for this user");
         }
     }
 
@@ -414,7 +446,7 @@ private string FormatGamesJson(string gamesGetResponse)
             string id = game.ContainsKey("gameId") ? game["gameId"].ToString() ?? "" : "";
             string gameName = game.ContainsKey("game_name") ? game["game_name"].ToString() ?? "" : "";
             string categoryId = game.ContainsKey("categoryId") ? game["categoryId"].ToString() ?? "" : "";
-            string gameImage = game.ContainsKey("game_image") ? game["game_image"].ToString() ?? "" : "";
+            string gameImage = "https://www.playerclub365.com/images/posters/"+id+".jpg";
             
             string encodedSrc = string.IsNullOrEmpty(gameImage) ? "" : ConvertToBase64(gameImage);
             
@@ -585,7 +617,7 @@ private string FormatGamesJson(string gamesGetResponse)
                 logResp = CallLog(entityId);
                 updateEntityResponse = UpdateEntityInformation(entityId, countryIso);
                 entityBonusesUpdateResponse = CallEntityBonusesUpdate(entityId);
-                Response.Redirect(SuccessUrl2, true);
+                Response.Redirect(SignInUrl, true);
                 break;
 
             case 3:
@@ -768,7 +800,6 @@ private string FormatGamesJson(string gamesGetResponse)
             <item xsi:type=""xsd:string"">pg.gameId</item>
             <item xsi:type=""xsd:string"">game_name</item>
             <item xsi:type=""xsd:string"">categoryId</item>
-            <item xsi:type=""xsd:string"">game_image</item>
             </Fields>
             <FilterFields enc:itemType=""xsd:string"" enc:arraySize=""1"" xsi:type=""ns2:ArrayOfString"">
             <item xsi:type=""xsd:string"">categoryId</item></FilterFields>
