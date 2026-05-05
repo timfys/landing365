@@ -8,7 +8,6 @@
   <asp:Literal ID="title" runat="server"></asp:Literal>
   <asp:Literal ID="metaTitle" runat="server"></asp:Literal>
   <asp:Literal ID="desc" runat="server"></asp:Literal>
-  <meta name="keywords" content="social casino, free coins, online slots, casino games, risk-free gaming, playerclub365, welcome bonus, no deposit bonus">
   <meta name="author" content="PlayerClub365">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0B0F12">
@@ -348,7 +347,7 @@ CssClass="hidden"
             <svg class="w-6 h-6 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
           </div>
           <h3 class="text-brand-gold text-xl font-bold mb-2">100% Risk-Free</h3>
-          <p class="text-brand-text-muted text-sm leading-relaxed">No real money gambling. Just pure entertainment and excitement.</p>
+          <p class="text-brand-text-muted text-sm leading-relaxed">Virtual coins only. All the casino excitement, Pure entertainment.</p>
         </div>
       </div>
     </section>
@@ -380,17 +379,6 @@ CssClass="hidden"
             <div class="faq-body overflow-hidden max-h-0 transition-all duration-300 ease-in-out">
               <div class="px-6 pb-6 pt-0 text-brand-text-muted text-base leading-relaxed border-t border-brand-border/50 mt-2 pt-4">
                 Correct! The 20 free coins are a welcome gift for our new community members. No deposit or purchase is required to claim this specific offer.
-              </div>
-            </div>
-          </div>
-          <div class="border border-brand-border rounded-2xl overflow-hidden bg-brand-panel/20 hover:bg-brand-panel/40 transition-all">
-            <button onclick="toggleFaq(this)" class="w-full py-5 px-6 flex items-center justify-between text-left focus:outline-none group">
-              <span class="font-bold text-lg text-white group-hover:text-brand-gold-hover">Can I win real money?</span>
-              <span class="faq-icon text-brand-text-muted text-2xl">+</span>
-            </button>
-            <div class="faq-body overflow-hidden max-h-0 transition-all duration-300 ease-in-out">
-              <div class="px-6 pb-6 pt-0 text-brand-text-muted text-base leading-relaxed border-t border-brand-border/50 mt-2 pt-4">
-                PlayerClub365 is a social casino for entertainment purposes. While you can win virtual coins and climb the leaderboards, our platform does not offer real money gambling or cash prizes.
               </div>
             </div>
           </div>
