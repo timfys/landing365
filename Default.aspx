@@ -11,11 +11,11 @@
   <meta name="author" content="PlayerClub365">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0B0F12">
-  <link rel="canonical" href="https://playerclub365.com/">
+  <link rel="canonical" href="https://www.playerclub365.com/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://playerclub365.com/">
+  <meta property="og:url" content="https://www.playerclub365.com/">
   <asp:Literal ID="ogTitle" runat="server"></asp:Literal>
   <asp:Literal ID="ogDesc" runat="server"></asp:Literal>
   <meta property="og:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+20+FREE+COINS">
@@ -23,7 +23,7 @@
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://playerclub365.com/">
+  <meta property="twitter:url" content="https://www.playerclub365.com/">
   <meta property="twitter:title" content="Claim Your 20 free Coins - PlayerClub365">
   <meta property="twitter:description" content="You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free.">
   <meta property="twitter:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+20+FREE+COINS">
