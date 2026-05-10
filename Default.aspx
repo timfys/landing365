@@ -11,37 +11,35 @@
   <meta name="author" content="PlayerClub365">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0B0F12">
-  <link rel="canonical" href="https://www.playerclub365.com/">
+  <link rel="canonical" href="https://www.playerclub365.com/landing">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.playerclub365.com/">
+  <meta property="og:url" content="https://www.playerclub365.com/landing">
   <asp:Literal ID="ogTitle" runat="server"></asp:Literal>
   <asp:Literal ID="ogDesc" runat="server"></asp:Literal>
-  <meta property="og:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+20+FREE+COINS">
+  <meta property="og:image" content="img/claim.svg">
   <meta property="og:site_name" content="PlayerClub365">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://www.playerclub365.com/">
+  <meta property="twitter:url" content="https://www.playerclub365.com/landing">
   <meta property="twitter:title" content="Claim Your 20 free Coins - PlayerClub365">
   <meta property="twitter:description" content="You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free.">
-  <meta property="twitter:image" content="https://placehold.co/1200x630/0B0F12/FFD700?text=CLAIM+20+FREE+COINS">
+  <meta property="twitter:image" content="img/claim.svg">
 
   <!-- Icons -->
-  <link rel="icon" type="image/png" href="https://placehold.co/32x32/FFD700/000000?text=P">
-  <link rel="apple-touch-icon" href="https://placehold.co/180x180/FFD700/000000?text=P">
+  <link rel="icon" type="image/png" href="img/p.svg">
+  <link rel="apple-touch-icon" href="img/p.svg">
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="css/googlefonts.css" rel="stylesheet">
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.js"></script>
 
   <!-- Canvas Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="js/confetti.browser.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -864,12 +862,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-<script>
-fetch('https://api.ipify.org?format=json')
-  .then(response => response.json())
-  .then(data => {
-    document.cookie = `clientIp=${data.ip}; path=/`;
-  });
-</script>
+
 </body>
 </html>

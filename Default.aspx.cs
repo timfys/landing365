@@ -46,6 +46,31 @@ public partial class Default : Page
 
         return "IL";
     }
+    public static string GetClientIp(HttpContext context)
+    {
+        // 1. Пытаемся взять заголовок от Cloudflare (раз вы его используете)
+        string ip = context.Request.Headers["CF-Connecting-IP"];
+
+        // 2. Если Cloudflare нет, проверяем стандартный заголовок прокси
+        if (string.IsNullOrEmpty(ip))
+        {
+            ip = context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+        }
+
+        // 3. Если и там пусто, берем прямой адрес
+        if (string.IsNullOrEmpty(ip))
+        {
+            ip = context.Request.UserHostAddress;
+        }
+
+        // Если в X_FORWARDED_FOR пришел список IP через запятую, берем первый
+        if (!string.IsNullOrEmpty(ip) && ip.Contains(","))
+        {
+            ip = ip.Split(',')[0].Trim();
+        }
+
+        return ip;
+    }
     // -------------------------------------------------------
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -55,10 +80,11 @@ public partial class Default : Page
             string baseUrl = ConfigurationManager.AppSettings[HttpContext.Current.Request.Url.AbsoluteUri.Contains("www.playerclub365.com") ? "BaseUrlLive" : "BaseUrl"];
             btnPlay.OnClientClick = "window.location = '"+baseUrl+"'; return false;";
         }
-        /*HttpCookie referrerCookie = new HttpCookie("Referer", "https://www.google.com/");
-        referrerCookie.Domain = Request.Url.Host; // или явно укажите домен, например, "localhost"
-        referrerCookie.Path = "/"; // кука будет доступна на всём сайте
-        Response.Cookies.Add(referrerCookie);*/
+        string clientIp = GetClientIp(HttpContext.Current);
+        HttpCookie ipCookie = new HttpCookie("clientIp", clientIp);
+        ipCookie.Expires = DateTime.Now.AddDays(1);
+        ipCookie.Path = "/";
+        Response.Cookies.Add(ipCookie);
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
         Response.Cache.SetNoStore();
         Response.Cache.SetExpires(DateTime.UtcNow.AddSeconds(-1));
