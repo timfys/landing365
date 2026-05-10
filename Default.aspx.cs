@@ -380,7 +380,12 @@ private void LoadCountriesToJavaScript()
             if (defaultItem != null)
             {
                 ddlCountry.SelectedValue = defaultIso;
-                callingCode.Value = defaultItem.Attributes["data-code"];
+                string defaultCode = defaultItem.Attributes["data-code"];
+                Page.ClientScript.RegisterStartupScript(
+                    this.GetType(),
+                    "defaultCallingCode",
+                    "window._callingCode = '" + defaultCode.Replace("'", "\\'") + "';",
+                    true);
             }
             return;
         }
@@ -573,11 +578,32 @@ private string FormatGamesJson(string gamesGetResponse)
             }
         }
     }
+    private string GetCallingCodeByIso(string iso)
+    {
+        if (string.IsNullOrWhiteSpace(iso)) return "";
+        try
+        {
+            string cacheFilePath = Server.MapPath("~/App_Data/countries_cache.json");
+            if (!File.Exists(cacheFilePath)) return "";
+            string jsonData = File.ReadAllText(cacheFilePath, Encoding.UTF8);
+            var serializer = new JavaScriptSerializer();
+            var countries = serializer.Deserialize<List<Dictionary<string, object>>>(jsonData);
+            foreach (var c in countries)
+            {
+                if (c.ContainsKey("ISO3166") &&
+                    string.Equals(c["ISO3166"].ToString(), iso, StringComparison.OrdinalIgnoreCase))
+                    return c.ContainsKey("CallingCode") ? c["CallingCode"].ToString() : "";
+            }
+        }
+        catch { }
+        return "";
+    }
+
     protected void btnClaim_Click(object sender, EventArgs e)
     {
         string phone      = txtPhone.Text.Trim();
         string countryIso = Request.Form["ddlCountry"].Trim() ?? string.Empty;
-        string callingCode = (Request.Form["callingCode"] ?? "").Trim();
+        string callingCode = GetCallingCodeByIso(countryIso);
         string toEncode = "+"+callingCode + phone;
         string encrypted = EncryptObject(toEncode);
         string encoded = HttpUtility.UrlEncode(encrypted);

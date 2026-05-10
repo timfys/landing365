@@ -1,4 +1,4 @@
-	<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="Default" ContentType="text/html" ResponseEncoding="utf-8" EnableEventValidation="false" %>
+	<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="Default" ContentType="text/html" ResponseEncoding="utf-8" EnableEventValidation="false" EnableViewState="false" %>
 <!DOCTYPE html>
 <html lang="en" class="overflow-x-hidden">
 <head>
@@ -242,7 +242,7 @@ CssClass="hidden"
 
 </div>
   </div>
-<asp:HiddenField ID="callingCode" runat="server" Value="" />
+
 
             <!-- Phone Number Input -->
           <div class="flex-1 relative h-full min-w-0">
@@ -421,23 +421,19 @@ CssClass="hidden"
   </div><!-- end app wrapper -->
 <script>
   function preparePhoneAndSubmit() {
-    // Получаем значение из ASP.NET текстовых полей
     var phoneInput = document.getElementById('<%= txtPhone.ClientID %>');
-    var callingCodeInput = document.getElementById('callingCode');
-    if (!phoneInput || !callingCodeInput) {
-      return true; // Если элементы не найдены, просто отправляем форму
+    if (!phoneInput) {
+      return true;
     }
 
-    // Очищаем номер: удаляем все не-цифры и ведущие нули
     var phone = phoneInput.value.replace(/\D/g, '').replace(/^0+/, '');
-    var callingCode = callingCodeInput.value.trim();
+    var callingCode = (window._callingCode || '').trim();
 
-    // Устанавливаем в localStorage в формате +<код_страны><номер>
+    // Только для localStorage — сервер сам находит код по ISO из ddlCountry
     if (phone && callingCode) {
       localStorage.setItem('Mobile', '+' + callingCode + phone);
     }
 
-    // Возвращаем true, чтобы форма была отправлена
     return true;
   }
   // Game data array
@@ -652,7 +648,6 @@ CssClass="hidden"
     document.addEventListener('DOMContentLoaded', function () {
     
       var sel = document.getElementById('<%= ddlCountry.ClientID %>');
-      var hiddenCode = document.getElementById('<%= callingCode.ClientID %>');
     // Добавляем флаги к элементам списка
     for (var i = 0; i < sel.options.length; i++) {
         var option = sel.options[i];
@@ -671,7 +666,7 @@ CssClass="hidden"
     }
       sel.addEventListener('change', function () {
         var selected = this.options[this.selectedIndex];
-        hiddenCode.value = selected.getAttribute('data-code') || '';
+        window._callingCode = selected.getAttribute('data-code') || '';
       });
     
     });
@@ -743,7 +738,6 @@ CssClass="hidden"
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const sel = document.getElementById('<%= ddlCountry.ClientID %>');
-    const hiddenCode = document.getElementById('<%= callingCode.ClientID %>');
     const customSelect = document.getElementById('customSelect');
     const selectedFlag = document.getElementById('selectedFlag');
     const selectedCode = document.getElementById('selectedCode');
@@ -790,8 +784,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- 2. Выбор страны ---
     function selectCountry(iso, code) {
-        // Обновляем скрытое поле
-        hiddenCode.value = code;
+        // Обновляем глобальную JS-переменную (вместо скрытого поля)
+        window._callingCode = code;
 
         // Обновляем кастомный селект
         selectedFlag.src = 'flags/' + iso.toLowerCase() + '.png';
