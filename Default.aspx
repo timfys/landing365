@@ -13,7 +13,6 @@
   <meta name="theme-color" content="#0B0F12">
   <link rel="canonical" href="https://www.playerclub365.com/landing">
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.playerclub365.com/landing">
   <asp:Literal ID="ogTitle" runat="server"></asp:Literal>
@@ -21,24 +20,19 @@
   <meta property="og:image" content="img/claim.svg">
   <meta property="og:site_name" content="PlayerClub365">
 
-  <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://www.playerclub365.com/landing">
   <meta property="twitter:title" content="Claim Your 20 free Coins - PlayerClub365">
   <meta property="twitter:description" content="You've been gifted 20 free coins! Claim now and start playing top social casino games risk-free.">
   <meta property="twitter:image" content="img/claim.svg">
 
-  <!-- Icons -->
   <link rel="icon" type="image/png" href="img/p.svg">
   <link rel="apple-touch-icon" href="img/p.svg">
 
-  <!-- Fonts -->
   <link href="css/googlefonts.css" rel="stylesheet">
 
-  <!-- Tailwind CSS -->
   <script src="js/tailwind.js"></script>
 
-  <!-- Canvas Confetti -->
   <script src="js/confetti.browser.min.js"></script>
 
   <script>
@@ -99,7 +93,6 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Loading spinner overlay */
     #loadingOverlay {
       display: none;
       position: fixed;
@@ -120,7 +113,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Error message */
     #errorMsg {
       display: none;
       background: #3d0c0c;
@@ -152,6 +144,7 @@
     }
     #errorMsg.active { display: block; }
     #successMsg.active { display: block; }
+    .agree_link { text-decoration: underline; }
 
   </style>
 </head>
@@ -164,12 +157,9 @@
 
 <div class="min-h-screen flex flex-col font-sans overflow-x-hidden relative bg-brand-bg">
 
-<!-- Gradient background layer -->
 <div class="absolute inset-0 bg-luxury-gradient z-0 pointer-events-none"></div>
 
-<!-- Page content -->
 <div class="relative z-10">
-    <!-- ===== HEADER ===== -->
     <header class="text-center px-0 pt-12 pb-4 flex flex-col items-center justify-center relative z-10 w-full overflow-hidden">
       <p class="text-xl md:text-3xl max-w-4xl mx-auto mb-2 leading-relaxed font-bold text-white uppercase tracking-wide animate-fadeInUp">
         You have received a welcome bonus
@@ -188,7 +178,6 @@
       </p>
     </header>
 
-    <!-- ===== PROMO / FORM CARD ===== -->
     <section class="px-4 text-center mb-10 relative z-10">
       <div class="max-w-3xl mx-auto bg-brand-panel border border-brand-border rounded-3xl p-5 md:p-10 relative shadow-2xl">
 
@@ -199,16 +188,13 @@
           Select your country and enter your number to unlock 20 free Coins.
         </p>
 
-        <!-- Error message placeholder -->
         <div id="errorMsg"></div>
         <div id="successMsg"></div>
 
-        <!-- ===== ASP.NET FORM ===== -->
         <form id="claimForm" runat="server" class="mb-6 max-w-2xl mx-auto">
 
        <div id="phoneInputContainer" runat="server" class="relative mb-6 flex flex-row gap-2 md:gap-3 h-14 md:h-20 w-full">
 
-            <!-- Country ISO Dropdown -->
 <asp:DropDownList
     ID="ddlCountry"
     runat="server"
@@ -218,7 +204,6 @@ CssClass="hidden"
 </asp:DropDownList>
 <div class="relative w-[20%] md:w-30 shrink-0 h-full" id="customCountryWrapper">
   
-  <!-- Selected -->
   <div id="customSelect"
        class="w-full h-full flex items-center justify-center gap-1 md:gap-2 px-2 md:px-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer text-black font-bold text-sm md:text-xl shadow-inner">
 
@@ -226,10 +211,8 @@ CssClass="hidden"
     <span id="selectedCode">+46</span>
   </div>
 
-  <!-- Dropdown -->
 <div id="customDropdown"
      class="absolute hidden top-full left-0 w-[500%] mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50">
-  <!-- SEARCH -->
   <div class="p-2 border-b">
     <input id="countrySearch"
            type="text"
@@ -237,14 +220,12 @@ CssClass="hidden"
            class="w-full px-3 py-2 border rounded-lg text-black text-sm outline-none">
   </div>
 
-  <!-- LIST -->
   <div id="countryList" class="max-h-60 overflow-y-auto"></div>
 
 </div>
   </div>
 
 
-            <!-- Phone Number Input -->
           <div class="flex-1 relative h-full min-w-0">
             <asp:TextBox ID="txtPhone" runat="server"
               TextMode="SingleLine"
@@ -260,14 +241,12 @@ CssClass="hidden"
           </div>
 
           </div>
-          <!-- Read-only контейнер для отображения после успеха (скрыт по умолчанию) -->
           <div id="readonlyPhoneContainer" runat="server" visible="false" class="relative mb-6 h-14 md:h-20 w-full">
               <div class="w-full h-full px-4 md:px-6 bg-gray-100 border-2 border-gray-300 rounded-xl flex items-center text-black font-bold text-lg md:text-2xl shadow-inner cursor-not-allowed opacity-75">
                   <asp:Label ID="lblReadonlyPhone" runat="server" Text="" />
               </div>
           </div>
 
-          <!-- Submit Button -->
           <asp:Button ID="btnClaim" runat="server"
             Text="Collect and Play "
             OnClick="btnClaim_Click"
@@ -288,9 +267,15 @@ CssClass="hidden"
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
           </svg>
           <span>100% Secure &amp; Spam-Free</span>
-        </div>
 
-        <!-- Server-side error label (hidden by default, shown via code-behind if needed) -->
+        </div>
+        <div class="flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-brand-text-muted/70">
+
+<p class="">By continuing, You agree PlayerClub365
+<a href="https://www.playerclub365.com/blog/en/page/terms-and-conditions" class="agree_link" target="_blank">Conditions of Use</a>
+ and
+<a href="https://www.playerclub365.com/blog/en/page/privacy-for-online-casino" class="agree_link" target="_blank">Privacy Notice</a></p>
+</div>
         <asp:Label ID="lblError" runat="server" Visible="false"
           CssClass="block mt-4 text-red-400 text-sm font-semibold" />
         <asp:Label ID="lblSuccess" runat="server" Visible="false"
@@ -302,17 +287,15 @@ CssClass="hidden"
         <h4 id="categoryDescription" class="text-xl md:text-xl text-white font-bold mb-3"></h4>
         <div class="w-20 h-1 bg-brand-gold mx-auto rounded-full"></div>
       </div> 
-<!-- ===== GAME SLIDER ===== -->
 <div class="w-full py-2 relative overflow-hidden mb-10">
   <div class="absolute top-0 left-0 w-12 md:w-32 h-full bg-gradient-to-r from-brand-bg/80 to-transparent z-10 pointer-events-none"></div>
   <div class="absolute top-0 right-0 w-12 md:w-32 h-full bg-gradient-to-l from-brand-bg/80 to-transparent z-10 pointer-events-none"></div>
   
   <div id="gameSlider" class="overflow-hidden relative">
-    <div id="sliderTrack" class="flex w-max gap-4 px-4" style="transition: none;">      <!-- Games will be dynamically inserted here -->
+    <div id="sliderTrack" class="flex w-max gap-4 px-4" style="transition: none;"> 
     </div>
   </div>
 </div>
-    <!-- ===== BENEFITS ===== -->
     <section class="px-4 mb-16 relative z-10">
       <div class="text-center mb-10">
         <h2 class="text-3xl md:text-4xl text-white font-bold mb-3">Why Claim Now?</h2>
@@ -350,7 +333,6 @@ CssClass="hidden"
       </div>
     </section>
 
-    <!-- ===== FAQ ===== -->
     <section class="px-4 mb-16 relative z-10">
       <div class="max-w-3xl mx-auto">
         <div class="text-center mb-10">
@@ -396,7 +378,6 @@ CssClass="hidden"
     </section>
 <asp:Literal ID="litAffiliateScript" runat="server"></asp:Literal>
 </div>
-    <!-- ===== FOOTER ===== -->
     <footer class="text-center py-12 px-4 border-t border-brand-border bg-brand-bg relative z-10">
       <div class="mb-8">
         <span class="inline-block text-xs md:text-sm font-semibold text-brand-text-muted uppercase tracking-widest border border-brand-border px-4 py-1.5 rounded-full bg-brand-panel/50">
@@ -414,11 +395,20 @@ CssClass="hidden"
           </div>
           <p class="leading-relaxed">By continuing, you agree to our Terms &amp; Privacy Policy.<br/>Virtual coins have no cash value.</p>
         </div>
-        <p class="text-brand-text-muted/40 text-xs">© <%= DateTime.Now.Year %> PlayerClub365 | 100% Risk-Free Social Casino | Virtual Coins for Fun Only</p>
+        <nav class="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-brand-text-muted/50">
+      <a href="https://www.playerclub365.com/blog/en/page/privacy-for-online-casino" target="_blank" class="hover:text-brand-gold transition-colors">Privacy Policy</a>
+      <span class="text-brand-border">|</span>
+      <a href="https://www.playerclub365.com/blog/en/page/terms-and-conditions" target="_blank" class="hover:text-brand-gold transition-colors">Terms &amp; Conditions</a>
+      <span class="text-brand-border">|</span>
+      <a href="https://www.playerclub365.com/blog/en/page/bonus-terms-and-conditions" target="_blank" class="hover:text-brand-gold transition-colors">Bonus Terms &amp; Conditions</a>
+      <span class="text-brand-border">|</span>
+      <a href="https://www.playerclub365.com/blog/en/page/responsible-social-gaming" target="_blank" class="hover:text-brand-gold transition-colors">Responsible Gaming</a>
+    </nav>
+    <p class="text-brand-text-muted/40 text-xs">© <%= DateTime.Now.Year %> PlayerClub365 | 100% Risk-Free Social Casino | Virtual Coins for Fun Only</p>
       </div>
     </footer>
 
-  </div><!-- end app wrapper -->
+  </div>
 <script>
   function preparePhoneAndSubmit() {
     var phoneInput = document.getElementById('<%= txtPhone.ClientID %>');
